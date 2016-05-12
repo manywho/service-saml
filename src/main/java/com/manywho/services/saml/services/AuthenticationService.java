@@ -28,9 +28,6 @@ public class AuthenticationService {
     public AuthenticatedWhoResult createAuthenticatedWhoResult(SamlResponse response) throws Exception {
         AuthenticatedWhoResult result = new AuthenticatedWhoResult();
 
-        ArrayList<String> listOfGroups = new ArrayList<>();
-        listOfGroups.add(response.getGroup());
-
         result.setDirectoryId("SAML");
         result.setDirectoryName("SAML");
         result.setEmail(response.getEmailAddress());
@@ -44,7 +41,7 @@ public class AuthenticationService {
         result.setUsername(response.getNameIdentifier());
 
         cacheManager.removeUserGroups(result.getUserId());
-        cacheManager.saveUserGroups(result.getUserId(), listOfGroups);
+        cacheManager.saveUserGroups(result.getUserId(), response.getGroup());
 
         return result;
     }

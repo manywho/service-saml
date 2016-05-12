@@ -252,12 +252,11 @@ public class Response {
 	}
 
 
-	public String getAttribute(String name) {
+	public ArrayList<String> getAttribute(String name) {
 		HashMap<String, ArrayList<String>> attributes = getAttributes();
 
 		if (!attributes.isEmpty()) {
-			ArrayList<String> attrVal = attributes.get(name);
-			return attrVal == null || attrVal.size() == 0 ? null : attrVal.get(0);
+			return attributes.get(name);
 		}
 		return null;
 	}

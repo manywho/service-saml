@@ -1,6 +1,7 @@
 package com.manywho.services.saml.entities;
 
 import com.onelogin.saml.Response;
+import java.util.ArrayList;
 
 public class SamlResponse {
     private final Response response;
@@ -10,7 +11,7 @@ public class SamlResponse {
     }
 
     public String getEmailAddress() {
-        return response.getAttribute("http://manywho.com/saml/emailaddress");
+        return getFirstItem(response.getAttribute("http://manywho.com/saml/emailaddress"));
     }
 
     public String getError() {
@@ -18,14 +19,14 @@ public class SamlResponse {
     }
 
     public String getFirstName() {
-        return response.getAttribute("http://manywho.com/saml/firstname");
+        return getFirstItem(response.getAttribute("http://manywho.com/saml/firstname"));
     }
 
     public String getLastName() {
-        return response.getAttribute("http://manywho.com/saml/lastname");
+        return getFirstItem(response.getAttribute("http://manywho.com/saml/lastname"));
     }
 
-    public String getGroup() {
+    public ArrayList<String> getGroup() {
         return response.getAttribute("http://manywho.com/saml/group");
     }
 
@@ -35,5 +36,13 @@ public class SamlResponse {
 
     public boolean isValid() {
         return response.isValid();
+    }
+
+    private String getFirstItem(ArrayList<String> arrayList) {
+        if (arrayList!= null && arrayList.size()>0) {
+            return arrayList.get(0);
+        }
+
+        return null;
     }
 }
