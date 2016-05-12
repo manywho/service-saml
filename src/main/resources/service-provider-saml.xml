@@ -1,0 +1,24 @@
+<md:EntityDescriptor ID="N724biEQb33bre20.C7RxMfB6S6" cacheDuration="PT1440M" entityID="pingfederate.manywho.com"
+                     xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata">
+    <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol" WantAuthnRequestsSigned="false">
+        <md:KeyDescriptor use="signing">
+            <ds:KeyInfo
+                    xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+                <ds:X509Data>
+                    <ds:X509Certificate>certified value</ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+        </md:KeyDescriptor>
+        <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>
+        <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://52.50.129.191:9031/idp/SSO.saml2"/>
+        <saml:Attribute Name="http://manywho.com/saml/emailaddress" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic"
+                        xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"/>
+        <saml:Attribute Name="http://manywho.com/saml/group" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic"
+                        xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"/>
+        <saml:Attribute Name="http://manywho.com/saml/firstname" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic"
+                        xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"/>
+        <saml:Attribute Name="http://manywho.com/saml/lastname" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic"
+                        xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"/>
+    </md:IDPSSODescriptor>
+    <md:ContactPerson contactType="administrative"/>
+</md:EntityDescriptor>

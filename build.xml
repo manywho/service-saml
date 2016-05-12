@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<project name="service" basedir="." default="generate-properties">
+    <target name="generate-properties" description="Generate the properties file from the given system properties">
+        <propertyfile file="src/main/resources/service.properties">
+            <entry key="redis.url" value="${redis.url}"/>
+        </propertyfile>
+    </target>
+</project>
