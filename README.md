@@ -32,7 +32,7 @@ the packaged JAR).
 Running the following command will start the service listening on `0.0.0.0:8080/api/saml/1`:
 
 ```bash
-$ java -jar target/twilio-2.0-SNAPSHOT.jar
+$ java -jar target/saml-2.0-SNAPSHOT.jar
 ```
 
 ##### Custom Port
