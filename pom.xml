@@ -37,7 +37,6 @@
     </dependencies>
 
     <build>
-        <finalName>java-saml-toolkit</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
