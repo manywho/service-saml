@@ -6,13 +6,13 @@ import com.manywho.services.saml.entities.SamlResponse;
 import com.onelogin.AccountSettings;
 import com.onelogin.saml.Response;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
@@ -53,13 +53,14 @@ public class SamlService {
         deflaterOutputStream.close();
         outputStream.close();
         String base64 = Base64.encodeBase64String(outputStream.toByteArray());
+        
         return URLEncoder.encode( base64, "UTF-8" );
     }
 
     private String overwriteIssueInstant(String original){
-        DateFormat dateFormat = new SimpleDateFormat("yyyy - MM - dd'T'HH:mm:ss");
-        String stringDate = dateFormat.format(new Date(System.currentTimeMillis()));
+        DateTime dateTime = new DateTime();
+        DateTimeFormatter formatterDateTime = DateTimeFormat.forPattern("yyyy - MM - dd'T'HH:mm:ss");
 
-        return original.replace("CURRENT_TIMESTAMP", stringDate);
+        return original.replace("CURRENT_TIMESTAMP", formatterDateTime.print(dateTime));
     }
 }
