@@ -53,7 +53,7 @@ public class AuthManager {
      */
     public ObjectDataResponse authorization(Configuration configuration, ObjectDataRequest objectDataRequest, AuthenticatedWho authenticatedWho) throws Exception {
         String status = authorizationService.getStatus(objectDataRequest.getAuthorization(), authenticatedWho);
-        UserObject user = authorizationService.createUserObject(authenticatedWho, configuration.getLoginUrl(), status);
+        UserObject user = authorizationService.createUserObject(authenticatedWho, samlService.generateSamlLoginUrl(configuration), status);
 
         return new ObjectDataResponse(user);
     }

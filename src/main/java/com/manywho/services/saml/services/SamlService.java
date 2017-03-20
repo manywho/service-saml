@@ -1,19 +1,25 @@
 package com.manywho.services.saml.services;
 
+import com.auth0.jwt.internal.org.apache.commons.codec.binary.Base64;
+import com.manywho.services.saml.entities.Configuration;
 import com.manywho.services.saml.entities.SamlResponse;
 import com.onelogin.AccountSettings;
 import com.onelogin.saml.Response;
-
+import org.apache.commons.lang3.StringUtils;
 import javax.inject.Inject;
-import javax.ws.rs.core.UriInfo;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.zip.Deflater;
+import java.util.zip.DeflaterOutputStream;
 
 public class SamlService {
-    private final UriInfo uriInfo;
 
     @Inject
-    public SamlService(UriInfo uriInfo) {
-        this.uriInfo = uriInfo;
-    }
+    public SamlService() {}
 
     public SamlResponse decryptResponse(String certificate, String samlResponse, String redirectUri) {
         try {
@@ -28,5 +34,32 @@ public class SamlService {
         } catch (Exception e) {
             throw new RuntimeException("Unable to decrypt the SAML response: " + e.getMessage(), e);
         }
+    }
+
+    public String generateSamlLoginUrl(Configuration configuration) throws IOException {
+        if (StringUtils.isEmpty(configuration.getSamlRequest())) {
+            return configuration.getLoginUrl();
+        }
+        String replaceCurrentTimestamp = overwriteIssueInstant(configuration.getSamlRequest());
+
+        return String.format("%s?SAMLRequest=%s", configuration.getLoginUrl(), encodedSamlRequest(replaceCurrentTimestamp));
+    }
+
+    private String encodedSamlRequest(String samlXML ) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        Deflater deflater = new Deflater( Deflater.DEFAULT_COMPRESSION, true );
+        DeflaterOutputStream deflaterOutputStream = new DeflaterOutputStream(outputStream, deflater);
+        deflaterOutputStream.write(samlXML.getBytes("UTF-8"));
+        deflaterOutputStream.close();
+        outputStream.close();
+        String base64 = Base64.encodeBase64String(outputStream.toByteArray());
+        return URLEncoder.encode( base64, "UTF-8" );
+    }
+
+    private String overwriteIssueInstant(String original){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy - MM - dd'T'HH:mm:ss");
+        String stringDate = dateFormat.format(new Date(System.currentTimeMillis()));
+
+        return original.replace("CURRENT_TIMESTAMP", stringDate);
     }
 }

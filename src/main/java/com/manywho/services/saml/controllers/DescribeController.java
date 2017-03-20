@@ -25,7 +25,8 @@ public class DescribeController {
                 .setCulture(new Culture("EN", "US"))
                 .setConfigurationValues(new DescribeValueCollection(
                         new DescribeValue("Certificate", ContentType.Encrypted, true),
-                        new DescribeValue("Login URL", ContentType.String, true)
+                        new DescribeValue("Login URL", ContentType.String, true),
+                        new DescribeValue("SAMLRequest", ContentType.String, false)
                 ))
                 .createDescribeService()
                 .createResponse();

@@ -21,7 +21,8 @@ public class AuthorizationService {
     }
 
     public UserObject createUserObject(AuthenticatedWho authenticatedWho, String loginUrl, String status) {
-        return new UserObject("SAML", AuthorizationType.SAML, loginUrl, status, authenticatedWho.getUserId(), authenticatedWho.getUsername(), authenticatedWho.getEmail(), authenticatedWho.getFirstName());
+        return new UserObject("SAML", AuthorizationType.SAML, loginUrl, status, authenticatedWho.getUserId(),
+                authenticatedWho.getUsername(), authenticatedWho.getEmail(), authenticatedWho.getFirstName());
     }
 
     public String getStatus(Authorization authorization, AuthenticatedWho user) throws Exception {

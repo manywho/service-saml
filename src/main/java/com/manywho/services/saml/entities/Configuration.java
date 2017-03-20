@@ -16,11 +16,18 @@ public class Configuration {
     @Property("Login URL")
     private String loginUrl;
 
+    @Property("SAMLRequest")
+    private String SamlRequest;
+
     public String getCertificate() {
         return certificate;
     }
 
     public String getLoginUrl() {
         return loginUrl;
+    }
+
+    public String getSamlRequest() {
+        return SamlRequest;
     }
 }
