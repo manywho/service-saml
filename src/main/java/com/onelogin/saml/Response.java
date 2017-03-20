@@ -2,17 +2,14 @@ package com.onelogin.saml;
 
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
-
 import javax.xml.crypto.dsig.XMLSignature;
 import javax.xml.xpath.XPathExpressionException;
-
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +18,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import com.onelogin.AccountSettings;
 import com.onelogin.Constants;
 import com.onelogin.Error;
@@ -83,7 +79,7 @@ public class Response {
 	// isValid() function should be called to make basic security checks to responses.
 	public boolean isValid(String... requestId){
 		try{
-			Calendar now = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+			OffsetDateTime now = OffsetDateTime.now();
 			
 			if(this.document == null){
 				throw new Exception("SAML Response is not loaded");
@@ -173,9 +169,9 @@ public class Response {
 			}
 
 			// Check the session Expiration
-			Calendar sessionExpiration = this.getSessionNotOnOrAfter();
+			OffsetDateTime sessionExpiration = this.getSessionNotOnOrAfter();
 			if(sessionExpiration != null){
-				if(now.equals(sessionExpiration) || now.after(sessionExpiration)){
+				if(now.equals(sessionExpiration) || now.isAfter(sessionExpiration)){
 					throw new Exception("The attributes have expired, based on the SessionNotOnOrAfter of the AttributeStatement of this Response");
 				}
 			}
@@ -202,16 +198,16 @@ public class Response {
 
 						Node notOnOrAfter = subjectConfirmationDataNodes.item(c).getAttributes().getNamedItem("NotOnOrAfter");					
 						if(notOnOrAfter != null){
-							Calendar noa = javax.xml.bind.DatatypeConverter.parseDateTime(notOnOrAfter.getNodeValue());
-							if(now.equals(noa) || now.after(noa)){
+							OffsetDateTime noa = OffsetDateTime.parse(notOnOrAfter.getNodeValue());
+							if(now.equals(noa) || now.isAfter(noa)){
 								validSubjectConfirmation = false;
 							}
 						}
 
 						Node notBefore = subjectConfirmationDataNodes.item(c).getAttributes().getNamedItem("NotBefore");					
 						if(notBefore != null){
-							Calendar nb = javax.xml.bind.DatatypeConverter.parseDateTime(notBefore.getNodeValue());
-							if(now.before(nb)){
+							OffsetDateTime nb = OffsetDateTime.parse(notBefore.getNodeValue());
+							if(now.isBefore(nb)){
 								validSubjectConfirmation = false;
 							}
 						}			
@@ -362,13 +358,13 @@ public class Response {
 	 * @return DateTime|null The SessionNotOnOrAfter value
 	 * @throws XPathExpressionException 
 	 */
-	public Calendar getSessionNotOnOrAfter() throws XPathExpressionException
+	public OffsetDateTime getSessionNotOnOrAfter() throws XPathExpressionException
 	{
 		String notOnOrAfter = null;
 		NodeList entries = this.queryAssertion("/saml:AuthnStatement[@SessionNotOnOrAfter]");
 		if (entries.getLength() > 0) {
 			notOnOrAfter = entries.item(0).getAttributes().getNamedItem("SessionNotOnOrAfter").getNodeValue();
-			return javax.xml.bind.DatatypeConverter.parseDateTime(notOnOrAfter);
+			return OffsetDateTime.parse(notOnOrAfter);
 		}
 		return null;
 	}
@@ -425,21 +421,22 @@ public class Response {
 				NamedNodeMap attrName = timestampNodes.item(i).getAttributes();
 				Node nbAttribute = attrName.getNamedItem("NotBefore");
 				Node naAttribute = attrName.getNamedItem("NotOnOrAfter");
-				Calendar now = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-				log.debug("now :"+ now.get(Calendar.HOUR_OF_DAY) + ":" + now.get(Calendar.MINUTE)+ ":" + now.get(Calendar.SECOND));
+				OffsetDateTime now =  OffsetDateTime.now();
+				log.debug("now :"+ now.getHour()+ ":" + now.getMinute()+ ":" + now.getSecond());
 				// validate NotOnOrAfter using UTC
-				if(naAttribute != null){						
-					final Calendar notOnOrAfterDate = javax.xml.bind.DatatypeConverter.parseDateTime(naAttribute.getNodeValue());
-					log.debug("notOnOrAfterDate :"+ notOnOrAfterDate.get(Calendar.HOUR_OF_DAY) + ":" + notOnOrAfterDate.get(Calendar.MINUTE)+ ":" + notOnOrAfterDate.get(Calendar.SECOND));
-					if(now.equals(notOnOrAfterDate) || now.after(notOnOrAfterDate)){
+				if(naAttribute != null){
+					OffsetDateTime notOnOrAfterDate = (OffsetDateTime.parse(naAttribute.getNodeValue()));
+
+					log.debug("notOnOrAfterDate :"+ notOnOrAfterDate.getHour() + ":" + notOnOrAfterDate.getMinute()+ ":" + notOnOrAfterDate.getSecond());
+					if(now.equals(notOnOrAfterDate) || now.isAfter(notOnOrAfterDate)){
 						return false;
 					}
 				}
 				// validate NotBefore using UTC
-				if(nbAttribute != null){						
-					final Calendar notBeforeDate = javax.xml.bind.DatatypeConverter.parseDateTime(nbAttribute.getNodeValue());
-					log.debug("notBeforeDate :"+ notBeforeDate.get(Calendar.HOUR_OF_DAY) + ":" + notBeforeDate.get(Calendar.MINUTE)+ ":" + notBeforeDate.get(Calendar.SECOND));
-					if(now.before(notBeforeDate)){
+				if(nbAttribute != null){
+					final OffsetDateTime notBeforeDate = (OffsetDateTime.parse(nbAttribute.getNodeValue()));
+					log.debug("notBeforeDate :"+ notBeforeDate.getHour() + ":" + notBeforeDate.getMinute()+ ":" + notBeforeDate.getSecond());
+					if(now.isBefore(notBeforeDate)){
 						return false;
 					}
 				}
