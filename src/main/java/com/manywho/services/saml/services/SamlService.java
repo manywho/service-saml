@@ -53,7 +53,7 @@ public class SamlService {
         deflaterOutputStream.close();
         outputStream.close();
         String base64 = Base64.encodeBase64String(outputStream.toByteArray());
-        
+
         return URLEncoder.encode( base64, "UTF-8" );
     }
 
