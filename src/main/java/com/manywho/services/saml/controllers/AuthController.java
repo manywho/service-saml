@@ -8,6 +8,7 @@ import com.manywho.sdk.entities.security.AuthenticationCredentials;
 import com.manywho.sdk.services.controllers.AbstractController;
 import com.manywho.services.saml.entities.Configuration;
 import com.manywho.services.saml.managers.AuthManager;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -42,55 +43,89 @@ public class AuthController extends AbstractController {
     @POST
     public ObjectDataResponse groups(ObjectDataRequest objectDataRequest) throws Exception {
         Configuration configuration = getConfigurationValues(objectDataRequest);
+        ObjectCollection objectCollection = new ObjectCollection();
 
-        return new ObjectDataResponse(new ObjectCollection() {{
-            add(new Object() {{
-                setDeveloperName("GroupAuthorizationGroup");
-                setExternalId("user");
-                setProperties(new PropertyCollection() {{
-                    add(new Property("AuthenticationId", "user"));
-                    add(new Property("FriendlyName", "User Group"));
-                    add(new Property("DeveloperSummary", "A user without admin privileges"));
-                }});
-            }});
-            add(new Object() {{
-                setDeveloperName("GroupAuthorizationGroup");
-                setExternalId("admin");
-                setProperties(new PropertyCollection() {{
-                    add(new Property("AuthenticationId", "admin"));
-                    add(new Property("FriendlyName", "Admin Group"));
-                    add(new Property("DeveloperSummary", "A user with admin privileges"));
-                }});
-            }});
-        }});
+        if (!StringUtils.isEmpty(configuration.getSupportedGroups())) {
+            String[] stringName = configuration.getSupportedGroups().split(";");
+
+            for (String name : stringName) {
+                Object object = authorizationRestriction("GroupAuthorizationGroup",name, name);
+                objectCollection.add(object);
+            }
+        }
+        return new ObjectDataResponse(objectCollection);
     }
 
     @Path("/authorization/group/attribute")
     @POST
     public ObjectDataResponse groupAttributes(ObjectDataRequest objectDataRequest) throws Exception {
-        Configuration configuration = getConfigurationValues(objectDataRequest);
+        ObjectCollection objectCollection = new ObjectCollection();
+        PropertyCollection properties = new PropertyCollection();
+        properties.add(new Property("Label", "Users"));
+        properties.add(new Property("Value", "users"));
 
-        return new ObjectDataResponse(new ObjectCollection() {{
-            add(new Object() {{
-                setDeveloperName("AuthenticationAttribute");
-                setProperties(new PropertyCollection() {{
-                    add(new Property("Label", "Members"));
-                    add(new Property("Value", "MEMBERS"));
-                }});
-            }});
-        }});
+        Object object = new Object();
+        object.setDeveloperName("AuthenticationAttribute");
+        object.setExternalId("users");
+        object.setProperties(properties);
+        objectCollection.add(object);
+
+        return new ObjectDataResponse(objectCollection);
     }
 
     @Path("/authorization/user")
     @POST
     public ObjectDataResponse users(ObjectDataRequest objectDataRequest) throws Exception {
-        return new ObjectDataResponse();
+        Configuration configuration = getConfigurationValues(objectDataRequest);
+
+        ObjectCollection objectCollection = new ObjectCollection();
+
+        if (!StringUtils.isEmpty(configuration.getSupportedUsers())) {
+            String[] stringName = configuration.getSupportedUsers().split(";");
+
+            for (String userNameAndId : stringName) {
+                String[] userParts = userNameAndId.split(",");
+                if (userParts.length != 2) {
+                    throw new RuntimeException("Error in the format for Supported Users.");
+                }
+
+                Object object = authorizationRestriction("GroupAuthorizationUser",userParts[1], userParts[0]);
+                objectCollection.add(object);
+            }
+        }
+
+        return new ObjectDataResponse(objectCollection);
     }
 
     @Path("/authorization/user/attribute")
     @POST
     public ObjectDataResponse userAttributes(ObjectDataRequest objectDataRequest) throws Exception {
-        return new ObjectDataResponse();
+        ObjectCollection objectCollection = new ObjectCollection();
+
+        PropertyCollection properties = new PropertyCollection();
+        properties.add(new Property("Label", "Account ID"));
+        properties.add(new Property("Value", "accountId"));
+
+        Object object = new Object();
+        object.setDeveloperName("AuthenticationAttribute");
+        object.setExternalId("accountID");
+        object.setProperties(properties);
+        objectCollection.add(object);
+
+        return new ObjectDataResponse(objectCollection);
+    }
+
+    private Object authorizationRestriction(String developerName, String name, String friendlyName) {
+        Object object = new Object();
+        object.setDeveloperName(developerName);
+        object.setExternalId(name);
+
+        PropertyCollection properties = new PropertyCollection();
+        properties.add(new Property("AuthenticationId", name));
+        properties.add(new Property("FriendlyName", friendlyName));
+        properties.add(new Property("DeveloperSummary", friendlyName));
+        object.setProperties(properties);
+        return object;
     }
 
     private Configuration getConfigurationValues(ConfigurationValuesAware configurationValuesAware) throws Exception {
