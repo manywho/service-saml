@@ -41,6 +41,7 @@ public class AuthController extends AbstractController {
     @Path("/authorization/group")
     @POST
     public ObjectDataResponse groups(ObjectDataRequest objectDataRequest) throws Exception {
+        Configuration configuration = getConfigurationValues(objectDataRequest);
 
         return new ObjectDataResponse(new ObjectCollection() {{
             add(new Object() {{
@@ -67,6 +68,8 @@ public class AuthController extends AbstractController {
     @Path("/authorization/group/attribute")
     @POST
     public ObjectDataResponse groupAttributes(ObjectDataRequest objectDataRequest) throws Exception {
+        Configuration configuration = getConfigurationValues(objectDataRequest);
+
         return new ObjectDataResponse(new ObjectCollection() {{
             add(new Object() {{
                 setDeveloperName("AuthenticationAttribute");

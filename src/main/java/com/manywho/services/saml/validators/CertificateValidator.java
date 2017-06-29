@@ -1,5 +1,7 @@
 package com.manywho.services.saml.validators;
 
+import com.onelogin.AccountSettings;
+import com.onelogin.saml.Response;
 import org.apache.commons.codec.binary.Base64;
 import sun.security.provider.X509Factory;
 
@@ -18,14 +20,9 @@ public class CertificateValidator implements ConstraintValidator<Certificate, St
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         try {
-            // Remove the header and footer if either is supplied
-            String certificate = value.replaceAll(X509Factory.BEGIN_CERT, "")
-                    .replaceAll(X509Factory.END_CERT, "");
 
-            ByteArrayInputStream stream = new ByteArrayInputStream(Base64.decodeBase64(certificate.getBytes()));
-
-            CertificateFactory.getInstance("X.509")
-                    .generateCertificate(stream);
+            AccountSettings accountSettings = new AccountSettings();
+            accountSettings.setCertificate(value);
 
             return true;
         } catch (Exception e) {

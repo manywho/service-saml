@@ -16,8 +16,29 @@ public class Configuration {
     @Property("Login URL")
     private String loginUrl;
 
-    @Property("SAMLRequest")
-    private String SamlRequest;
+    @Property("Identifier of the IdP entity (URI)")
+    private String idpEntityId;
+
+    @Property("Identifier of the SP entity (URI)")
+    private String spEntityId;
+
+    @Property("Assertion Consumer Service (URL)")
+    private String assertionConsumer;
+
+    @Property("No XML Validation")
+    private Boolean noXmlValidation;
+
+    @Property("No Strict Validation")
+    private Boolean noStrictValidation;
+
+    @Property("Debug")
+    private Boolean debug;
+
+    @Property("Supported Users")
+    private String supportedUsers;
+
+    @Property("Supported Groups")
+    private String supportedGroups;
 
     public String getCertificate() {
         return certificate;
@@ -27,7 +48,35 @@ public class Configuration {
         return loginUrl;
     }
 
-    public String getSamlRequest() {
-        return SamlRequest;
+    public String getIdpEntityId() {
+        return idpEntityId;
+    }
+
+    public String getSpEntityId() {
+        return spEntityId;
+    }
+
+    public String getAssertionConsumer() {
+        return assertionConsumer;
+    }
+
+    public Boolean getNoXmlValidation() {
+        return noXmlValidation;
+    }
+
+    public Boolean getNoStrictValidation() {
+        return noStrictValidation;
+    }
+
+    public Boolean getDebug() {
+        return debug;
+    }
+
+    public String getSupportedUsers() {
+        return supportedUsers;
+    }
+
+    public String getSupportedGroups() {
+        return supportedGroups;
     }
 }

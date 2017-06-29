@@ -2,8 +2,9 @@ package com.manywho.services.saml.services;
 
 import com.manywho.sdk.entities.security.AuthenticatedWhoResult;
 import com.manywho.sdk.enums.AuthenticationStatus;
-import com.manywho.services.saml.entities.SamlResponse;
+import com.manywho.services.saml.entities.SamlResponseHandler;
 import com.manywho.services.saml.managers.CacheManager;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class AuthenticationService {
         return result;
     }
 
-    public AuthenticatedWhoResult createAuthenticatedWhoResult(SamlResponse response) throws Exception {
+    public AuthenticatedWhoResult createAuthenticatedWhoResult(SamlResponseHandler response) throws Exception {
         AuthenticatedWhoResult result = new AuthenticatedWhoResult();
 
         result.setDirectoryId("SAML");
@@ -33,7 +34,13 @@ public class AuthenticationService {
         result.setEmail(response.getEmailAddress());
         result.setFirstName(response.getFirstName());
         result.setIdentityProvider("SAML");
-        result.setLastName(response.getLastName());
+
+        if (!StringUtils.isEmpty(response.getLastName())) {
+            result.setLastName(response.getLastName());
+        } else {
+            result.setLastName(response.getFirstName());
+        }
+
         result.setStatus(AuthenticationStatus.Authenticated);
         result.setTenantName("SAML");
         result.setToken(jwtService.sign(response.getNameIdentifier()));
@@ -41,7 +48,12 @@ public class AuthenticationService {
         result.setUsername(response.getNameIdentifier());
 
         cacheManager.removeUserGroups(result.getUserId());
-        cacheManager.saveUserGroups(result.getUserId(), response.getGroup());
+        ArrayList<String> groups = new ArrayList<>();
+
+        if (!StringUtils.isEmpty(response.getGroup())) {
+            groups.add(response.getGroup());
+            cacheManager.saveUserGroups(result.getUserId(), groups);
+        }
 
         return result;
     }
