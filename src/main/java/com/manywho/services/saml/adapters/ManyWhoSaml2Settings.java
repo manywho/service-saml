@@ -1,4 +1,4 @@
-package com.manywho.services.saml.services;
+package com.manywho.services.saml.adapters;
 
 import com.manywho.services.saml.entities.Configuration;
 import com.onelogin.saml2.settings.Saml2Settings;

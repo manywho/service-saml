@@ -19,11 +19,16 @@ public class RestrictionsUtils {
         return groups;
     }
 
-    public static ArrayList<UserAllowed> listOfUsers(String groupsString) {
+    /**
+     *
+     * @param usersString format: userId, friendlyName;
+     * @return
+     */
+    public static ArrayList<UserAllowed> listOfUsers(String usersString) {
         ArrayList<UserAllowed> users = new ArrayList<>();
 
-        if (!StringUtils.isEmpty(groupsString)) {
-            String[] stringName = groupsString.split(";");
+        if (!StringUtils.isEmpty(usersString)) {
+            String[] stringName = usersString.split(";");
 
             for (String userNameAndId : stringName) {
                 String[] userParts = userNameAndId.split(",");
@@ -31,7 +36,7 @@ public class RestrictionsUtils {
                     throw new RuntimeException("Error in the format for Supported Users.");
                 }
 
-                UserAllowed userRestriction = new UserAllowed(userParts[1], userParts[0]);
+                UserAllowed userRestriction = new UserAllowed(userParts[0], userParts[1]);
                 users.add(userRestriction);
             }
         }

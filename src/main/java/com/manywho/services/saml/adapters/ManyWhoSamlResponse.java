@@ -1,4 +1,4 @@
-package com.manywho.services.saml.services;
+package com.manywho.services.saml.adapters;
 
 import com.onelogin.saml2.authn.SamlResponse;
 import com.onelogin.saml2.exception.SettingsException;

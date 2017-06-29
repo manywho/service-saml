@@ -1,7 +1,7 @@
 package com.manywho.services.saml.entities;
 
-import com.manywho.services.saml.services.ManyWhoSaml2Settings;
-import com.manywho.services.saml.services.ManyWhoSamlResponse;
+import com.manywho.services.saml.adapters.ManyWhoSaml2Settings;
+import com.manywho.services.saml.adapters.ManyWhoSamlResponse;
 import com.onelogin.saml2.exception.ValidationError;
 import javax.xml.xpath.XPathExpressionException;
 import java.util.List;
