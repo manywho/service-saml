@@ -19,10 +19,6 @@ public class ManyWhoSaml2Settings extends Saml2Settings {
     public ManyWhoSaml2Settings(Configuration configuration) {
         super();
 
-        if (configuration.getNoStrictValidation()) {
-            this.setStrict(false);
-        }
-
         if (configuration.getNoXmlValidation()) {
             this.setWantXMLValidation(false);
         }

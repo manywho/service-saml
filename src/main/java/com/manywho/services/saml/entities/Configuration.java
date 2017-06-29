@@ -26,13 +26,10 @@ public class Configuration {
     private String assertionConsumer;
 
     @Property("No XML Validation")
-    private Boolean noXmlValidation;
-
-    @Property("No Strict Validation")
-    private Boolean noStrictValidation;
+    private boolean noXmlValidation;
 
     @Property("Debug")
-    private Boolean debug;
+    private boolean debug;
 
     @Property("Supported Users")
     private String supportedUsers;
@@ -62,10 +59,6 @@ public class Configuration {
 
     public Boolean getNoXmlValidation() {
         return noXmlValidation;
-    }
-
-    public Boolean getNoStrictValidation() {
-        return noStrictValidation;
     }
 
     public Boolean getDebug() {
