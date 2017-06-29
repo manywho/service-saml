@@ -7,8 +7,9 @@ import com.manywho.sdk.entities.security.AuthenticatedWhoResult;
 import com.manywho.sdk.entities.security.AuthenticationCredentials;
 import com.manywho.sdk.services.controllers.AbstractController;
 import com.manywho.services.saml.entities.Configuration;
+import com.manywho.services.saml.entities.UserAllowed;
 import com.manywho.services.saml.managers.AuthManager;
-import org.apache.commons.lang3.StringUtils;
+import com.manywho.services.saml.utils.RestrictionsUtils;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -45,14 +46,11 @@ public class AuthController extends AbstractController {
         Configuration configuration = getConfigurationValues(objectDataRequest);
         ObjectCollection objectCollection = new ObjectCollection();
 
-        if (!StringUtils.isEmpty(configuration.getSupportedGroups())) {
-            String[] stringName = configuration.getSupportedGroups().split(";");
-
-            for (String name : stringName) {
-                Object object = authorizationRestriction("GroupAuthorizationGroup",name, name);
-                objectCollection.add(object);
-            }
+        for (String name : RestrictionsUtils.listOfGroups(configuration.getSupportedGroups())) {
+            Object object = authorizationRestriction("GroupAuthorizationGroup",name, name);
+            objectCollection.add(object);
         }
+
         return new ObjectDataResponse(objectCollection);
     }
 
@@ -61,12 +59,12 @@ public class AuthController extends AbstractController {
     public ObjectDataResponse groupAttributes(ObjectDataRequest objectDataRequest) throws Exception {
         ObjectCollection objectCollection = new ObjectCollection();
         PropertyCollection properties = new PropertyCollection();
-        properties.add(new Property("Label", "Users"));
-        properties.add(new Property("Value", "users"));
+        properties.add(new Property("Label", "Members"));
+        properties.add(new Property("Value", "MEMBERS"));
 
         Object object = new Object();
         object.setDeveloperName("AuthenticationAttribute");
-        object.setExternalId("users");
+        object.setExternalId("MEMBERS");
         object.setProperties(properties);
         objectCollection.add(object);
 
@@ -77,21 +75,11 @@ public class AuthController extends AbstractController {
     @POST
     public ObjectDataResponse users(ObjectDataRequest objectDataRequest) throws Exception {
         Configuration configuration = getConfigurationValues(objectDataRequest);
-
         ObjectCollection objectCollection = new ObjectCollection();
 
-        if (!StringUtils.isEmpty(configuration.getSupportedUsers())) {
-            String[] stringName = configuration.getSupportedUsers().split(";");
-
-            for (String userNameAndId : stringName) {
-                String[] userParts = userNameAndId.split(",");
-                if (userParts.length != 2) {
-                    throw new RuntimeException("Error in the format for Supported Users.");
-                }
-
-                Object object = authorizationRestriction("GroupAuthorizationUser",userParts[1], userParts[0]);
-                objectCollection.add(object);
-            }
+        for (UserAllowed userRestriction : RestrictionsUtils.listOfUsers(configuration.getSupportedUsers())) {
+            Object object = authorizationRestriction("GroupAuthorizationUser", userRestriction.getId(), userRestriction.getFriendlyName());
+            objectCollection.add(object);
         }
 
         return new ObjectDataResponse(objectCollection);

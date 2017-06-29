@@ -2,12 +2,10 @@ package com.manywho.services.saml.services;
 
 import com.manywho.sdk.entities.UserObject;
 import com.manywho.sdk.entities.run.elements.config.Authorization;
-import com.manywho.sdk.entities.run.elements.config.Group;
 import com.manywho.sdk.entities.security.AuthenticatedWho;
 import com.manywho.sdk.enums.AuthorizationType;
 import com.manywho.services.saml.managers.CacheManager;
 import org.apache.commons.collections4.CollectionUtils;
-
 import javax.inject.Inject;
 import java.util.ArrayList;
 
@@ -25,7 +23,7 @@ public class AuthorizationService {
                 authenticatedWho.getUsername(), authenticatedWho.getEmail(), authenticatedWho.getFirstName());
     }
 
-    public String getStatus(Authorization authorization, AuthenticatedWho user) throws Exception {
+    public String getStatus(Authorization authorization,  AuthenticatedWho user) throws Exception {
         switch (authorization.getGlobalAuthenticationType()) {
             case Public:
                 return "200";
@@ -37,14 +35,29 @@ public class AuthorizationService {
                 }
             case Specified:
                 if (!user.getUserId().equalsIgnoreCase("PUBLIC_USER")) {
+                    boolean validGroup = false;
+                    boolean validUser = false;
+
                     if (CollectionUtils.isNotEmpty(authorization.getGroups())) {
-                        ArrayList userGroups = cacheManager.getUserGroups(user.getUserId());
-                        for (final Group group : authorization.getGroups()) {
-                            if (userGroups.stream().anyMatch(m -> m.equals(group.getAuthenticationId()))) {
-                                return "200";
+                        ArrayList<String> userGroups = cacheManager.getUserGroups(user.getUserId());
+                        for (String g: userGroups) {
+                            if (authorization.getGroups().stream().anyMatch(m -> m.equals(g))) {
+                                validGroup = true;
                             }
                         }
+
                     }
+
+                    if (CollectionUtils.isNotEmpty(authorization.getUsers())) {
+                        if (authorization.getUsers().stream().anyMatch(m -> m.getAuthenticationId().equals(user.getUserId()))) {
+                            validUser = true;
+                        }
+                    }
+
+                    if (validGroup || validUser) {
+                        return "200";
+                    }
+
                 }
             default:
                 return "401";
