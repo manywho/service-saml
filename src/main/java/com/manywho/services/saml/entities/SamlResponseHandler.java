@@ -4,20 +4,25 @@ import com.manywho.services.saml.adapters.ManyWhoSaml2Settings;
 import com.manywho.services.saml.adapters.ManyWhoSamlResponse;
 import com.onelogin.saml2.exception.ValidationError;
 import javax.xml.xpath.XPathExpressionException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class SamlResponseHandler {
     private ManyWhoSamlResponse response;
+    private static final String GROUPS_NAMESPACE = "http://schemas.microsoft.com/ws/2008/06/identity/claims/groups";
+    private HashMap<String, List<String>> attributes;
 
     public SamlResponseHandler(Configuration configuration, String samlResponse, String currentURL) {
         ManyWhoSaml2Settings manyWhoSaml2Settings = new ManyWhoSaml2Settings(configuration);
         try {
             this.response = new ManyWhoSamlResponse(manyWhoSaml2Settings, samlResponse, currentURL);
+            this.attributes = response.getAttributes();
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-
     }
 
     public String getEmailAddress() {
@@ -37,8 +42,15 @@ public class SamlResponseHandler {
         return this.getAttribute("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname");
     }
 
-    public String getGroup() {
-        return this.getAttribute("http://manywho.com/saml/group");
+    public ArrayList<String> getGroups() {
+
+        if (!attributes.isEmpty() && attributes.get(GROUPS_NAMESPACE) != null) {
+
+            return listToArrayList(attributes.get(GROUPS_NAMESPACE));
+        } else {
+
+            return new ArrayList<>();
+        }
     }
 
     public String getNameIdentifier() throws Exception {
@@ -59,6 +71,12 @@ public class SamlResponseHandler {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private ArrayList<String> listToArrayList (List<String> list) {
+        ArrayList<String> arrayList = new ArrayList<>();
+        list.forEach(arrayList::add);
+        return arrayList;
     }
 
     public boolean isValid() {

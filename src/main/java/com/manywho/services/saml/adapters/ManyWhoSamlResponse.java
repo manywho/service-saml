@@ -10,6 +10,7 @@ import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 
 public class ManyWhoSamlResponse extends SamlResponse {
+
     public ManyWhoSamlResponse(Saml2Settings settings, String samlResponse, String currentUrl) throws ValidationError, SAXException, XPathExpressionException, SettingsException, ParserConfigurationException, IOException {
         super(settings, null);
         this.setDestinationUrl(currentUrl);

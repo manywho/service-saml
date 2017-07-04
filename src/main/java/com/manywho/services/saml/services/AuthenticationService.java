@@ -48,11 +48,9 @@ public class AuthenticationService {
         result.setUsername(response.getNameIdentifier());
 
         cacheManager.removeUserGroups(result.getUserId());
-        ArrayList<String> groups = new ArrayList<>();
 
-        if (!StringUtils.isEmpty(response.getGroup())) {
-            groups.add(response.getGroup());
-            cacheManager.saveUserGroups(result.getUserId(), groups);
+        if (!response.getGroups().isEmpty()) {
+            cacheManager.saveUserGroups(result.getUserId(), response.getGroups());
         }
 
         return result;
