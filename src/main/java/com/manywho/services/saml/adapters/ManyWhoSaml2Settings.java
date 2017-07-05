@@ -19,6 +19,14 @@ public class ManyWhoSaml2Settings extends Saml2Settings {
     public ManyWhoSaml2Settings(Configuration configuration) {
         super();
 
+        this.setCompressRequest(false);
+
+        try {
+            this.setIdpSingleSignOnServiceUrl(new URL(configuration.getLoginUrl()));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("The login url is not valid");
+        }
+
         if (configuration.getNoXmlValidation()) {
             this.setWantXMLValidation(false);
         }

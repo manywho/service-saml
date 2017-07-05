@@ -7,7 +7,6 @@ import com.manywho.services.saml.managers.CacheManager;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 
 public class AuthenticationService {
     private final JwtService jwtService;

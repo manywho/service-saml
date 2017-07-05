@@ -1,14 +1,13 @@
 package com.manywho.services.saml.services;
 
+import com.manywho.services.saml.adapters.ManyWhoSaml2Settings;
 import com.manywho.services.saml.entities.Configuration;
 import com.manywho.services.saml.entities.SamlResponseHandler;
-import com.onelogin.AccountSettings;
-import com.onelogin.AppSettings;
-import com.onelogin.saml.AuthRequest;
+import com.onelogin.saml2.authn.*;
+import com.onelogin.saml2.settings.Saml2Settings;
 import javax.inject.Inject;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
-import java.net.URLEncoder;
 
 public class SamlService {
 
@@ -24,28 +23,11 @@ public class SamlService {
     }
 
     public String generateSamlLoginUrl(com.manywho.services.saml.entities.Configuration configuration) throws IOException, XMLStreamException {
+        Saml2Settings appSettings = new ManyWhoSaml2Settings(configuration);
 
-        AppSettings appSettings = new AppSettings();
+        AuthnRequest authReq = new AuthnRequest(appSettings, false, false, false);
 
-        // set the URL of the consumer e.g. "http://localhost:22935/api/run/1/saml". The SAML Response
-        // will be posted to this URL
-        appSettings.setAssertionConsumerServiceUrl(configuration.getAssertionConsumer());
 
-        // set the issuer of the authentication request. This would usually be the URL of the
-        // issuing web application
-        appSettings.setIssuer(configuration.getIdpEntityId());
-
-        // the accSettings object contains settings specific to the users account.
-
-        // At this point, your application must have identified the users origin
-        AccountSettings accSettings = new AccountSettings();
-
-        // The URL at the Identity Provider where to the authentication request should be sent
-        accSettings.setIdpSsoTargetUrl(configuration.getLoginUrl());
-
-        // Generate an AuthRequest and send it to the identity provider
-        AuthRequest authReq = new AuthRequest(appSettings, accSettings);
-
-        return accSettings.getIdp_sso_target_url()+"?SAMLRequest=" + URLEncoder.encode(authReq.getRequest(1), "UTF-8");
+        return configuration.getLoginUrl() + "?SAMLRequest=" + authReq.getEncodedAuthnRequest();
     }
 }
