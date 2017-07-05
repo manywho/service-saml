@@ -52,5 +52,3 @@ Contribution are welcome to the project - whether they are feature requests, imp
 ## License
 
 This service is released under the [MIT License](http://opensource.org/licenses/mit-license.php).
-
-This code includes [onelogin code for saml](https://github.com/onelogin/java-saml.git). 
