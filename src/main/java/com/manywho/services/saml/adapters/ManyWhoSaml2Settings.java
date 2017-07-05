@@ -61,7 +61,7 @@ public class ManyWhoSaml2Settings extends Saml2Settings {
 
     }
 
-    private X509Certificate parseCertificate(String certificate) throws CertificateException, Base64DecodingException {
+    public static X509Certificate parseCertificate(String certificate) throws CertificateException, Base64DecodingException {
         String certificateBody = certificate.replaceAll(X509Factory.BEGIN_CERT, "").replaceAll(X509Factory.END_CERT, "");
         byte[] decoded = Base64.decode(certificateBody);
         ByteArrayInputStream is = new ByteArrayInputStream(decoded);

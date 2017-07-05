@@ -1,14 +1,9 @@
 package com.manywho.services.saml.validators;
 
-import com.onelogin.AccountSettings;
-import com.onelogin.saml.Response;
-import org.apache.commons.codec.binary.Base64;
-import sun.security.provider.X509Factory;
+import com.manywho.services.saml.adapters.ManyWhoSaml2Settings;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.io.ByteArrayInputStream;
-import java.security.cert.CertificateFactory;
 
 public class CertificateValidator implements ConstraintValidator<Certificate, String> {
 
@@ -21,8 +16,7 @@ public class CertificateValidator implements ConstraintValidator<Certificate, St
     public boolean isValid(String value, ConstraintValidatorContext context) {
         try {
 
-            AccountSettings accountSettings = new AccountSettings();
-            accountSettings.setCertificate(value);
+            ManyWhoSaml2Settings.parseCertificate(value);
 
             return true;
         } catch (Exception e) {
