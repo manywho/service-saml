@@ -17,7 +17,7 @@
         <dependency>
             <groupId>com.manywho</groupId>
             <artifactId>sdk</artifactId>
-            <version>1.24.0</version>
+            <version>1.25.0</version>
         </dependency>
         <dependency>
             <groupId>com.auth0</groupId>
@@ -34,6 +34,13 @@
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4jVersion}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.onelogin</groupId>
+            <artifactId>java-saml</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.inject.Inject;
 
 public class CacheManager {
-    public final static String REDIS_KEY_USER_GROUPS = "service:saml:user:%s:groups";
+    private final static String REDIS_KEY_USER_GROUPS = "service:saml:user:%s:groups";
 
     private JedisPool jedisPool;
 

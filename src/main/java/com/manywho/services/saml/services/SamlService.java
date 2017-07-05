@@ -1,66 +1,51 @@
 package com.manywho.services.saml.services;
 
-import com.auth0.jwt.internal.org.apache.commons.codec.binary.Base64;
 import com.manywho.services.saml.entities.Configuration;
-import com.manywho.services.saml.entities.SamlResponse;
+import com.manywho.services.saml.entities.SamlResponseHandler;
 import com.onelogin.AccountSettings;
-import com.onelogin.saml.Response;
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import com.onelogin.AppSettings;
+import com.onelogin.saml.AuthRequest;
 import javax.inject.Inject;
-import java.io.ByteArrayOutputStream;
+import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.zip.Deflater;
-import java.util.zip.DeflaterOutputStream;
 
 public class SamlService {
 
     @Inject
     public SamlService() {}
 
-    public SamlResponse decryptResponse(String certificate, String samlResponse, String redirectUri) {
+    public SamlResponseHandler decryptResponse(Configuration configuration, String samlResponse, String redirectUri) {
         try {
-            // user account specific settings. Import the certificate here
-            AccountSettings accountSettings = new AccountSettings();
-            accountSettings.setCertificate(certificate);
-            accountSettings.getIdpCert();
-
-            Response response = new Response(accountSettings, samlResponse, redirectUri);
-
-            return new SamlResponse(response);
+            return new SamlResponseHandler(configuration, samlResponse, redirectUri);
         } catch (Exception e) {
             throw new RuntimeException("Unable to decrypt the SAML response: " + e.getMessage(), e);
         }
     }
 
-    public String generateSamlLoginUrl(Configuration configuration) throws IOException {
-        if (StringUtils.isEmpty(configuration.getSamlRequest())) {
-            return configuration.getLoginUrl();
-        }
-        String replaceCurrentTimestamp = overwriteIssueInstant(configuration.getSamlRequest());
+    public String generateSamlLoginUrl(com.manywho.services.saml.entities.Configuration configuration) throws IOException, XMLStreamException {
 
-        return String.format("%s?SAMLRequest=%s", configuration.getLoginUrl(), encodedSamlRequest(replaceCurrentTimestamp));
-    }
+        AppSettings appSettings = new AppSettings();
 
-    private String encodedSamlRequest(String samlXML ) throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        Deflater deflater = new Deflater( Deflater.DEFAULT_COMPRESSION, true );
-        DeflaterOutputStream deflaterOutputStream = new DeflaterOutputStream(outputStream, deflater);
-        deflaterOutputStream.write(samlXML.getBytes("UTF-8"));
-        deflaterOutputStream.close();
-        outputStream.close();
-        String base64 = Base64.encodeBase64String(outputStream.toByteArray());
+        // set the URL of the consumer e.g. "http://localhost:22935/api/run/1/saml". The SAML Response
+        // will be posted to this URL
+        appSettings.setAssertionConsumerServiceUrl(configuration.getAssertionConsumer());
 
-        return URLEncoder.encode( base64, "UTF-8" );
-    }
+        // set the issuer of the authentication request. This would usually be the URL of the
+        // issuing web application
+        appSettings.setIssuer(configuration.getIdpEntityId());
 
-    private String overwriteIssueInstant(String original){
-        DateTime dateTime = new DateTime();
-        DateTimeFormatter formatterDateTime = DateTimeFormat.forPattern("yyyy - MM - dd'T'HH:mm:ss");
+        // the accSettings object contains settings specific to the users account.
 
-        return original.replace("CURRENT_TIMESTAMP", formatterDateTime.print(dateTime));
+        // At this point, your application must have identified the users origin
+        AccountSettings accSettings = new AccountSettings();
+
+        // The URL at the Identity Provider where to the authentication request should be sent
+        accSettings.setIdpSsoTargetUrl(configuration.getLoginUrl());
+
+        // Generate an AuthRequest and send it to the identity provider
+        AuthRequest authReq = new AuthRequest(appSettings, accSettings);
+
+        return accSettings.getIdp_sso_target_url()+"?SAMLRequest=" + URLEncoder.encode(authReq.getRequest(1), "UTF-8");
     }
 }

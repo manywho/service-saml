@@ -7,7 +7,7 @@ import com.manywho.sdk.entities.security.AuthenticatedWho;
 import com.manywho.sdk.entities.security.AuthenticatedWhoResult;
 import com.manywho.sdk.entities.security.AuthenticationCredentials;
 import com.manywho.services.saml.entities.Configuration;
-import com.manywho.services.saml.entities.SamlResponse;
+import com.manywho.services.saml.entities.SamlResponseHandler;
 import com.manywho.services.saml.services.AuthenticationService;
 import com.manywho.services.saml.services.AuthorizationService;
 import com.manywho.services.saml.services.SamlService;
@@ -35,7 +35,8 @@ public class AuthManager {
      * @return information about the authenticated user
      */
     public AuthenticatedWhoResult authentication(Configuration configuration, AuthenticationCredentials authenticationCredentials) throws Exception {
-        SamlResponse response = samlService.decryptResponse(configuration.getCertificate(), authenticationCredentials.getCode(), authenticationCredentials.getRedirectUri());
+        SamlResponseHandler response = samlService.decryptResponse(configuration, authenticationCredentials.getCode(), authenticationCredentials.getRedirectUri());
+
         if (!response.isValid()) {
             return authenticationService.createAuthenticatedWhoResultWithError(response.getError());
         }
