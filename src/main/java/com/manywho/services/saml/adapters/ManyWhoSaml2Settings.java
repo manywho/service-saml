@@ -5,8 +5,6 @@ import com.onelogin.saml2.settings.Saml2Settings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.xml.security.exceptions.Base64DecodingException;
 import org.apache.xml.security.utils.Base64;
-import sun.security.provider.X509Factory;
-
 import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -62,7 +60,8 @@ public class ManyWhoSaml2Settings extends Saml2Settings {
     }
 
     public static X509Certificate parseCertificate(String certificate) throws CertificateException, Base64DecodingException {
-        String certificateBody = certificate.replaceAll(X509Factory.BEGIN_CERT, "").replaceAll(X509Factory.END_CERT, "");
+        String certificateBody = certificate.replaceAll("-----BEGIN CERTIFICATE-----", "")
+                .replaceAll("-----END CERTIFICATE-----", "");
         byte[] decoded = Base64.decode(certificateBody);
         ByteArrayInputStream is = new ByteArrayInputStream(decoded);
 
