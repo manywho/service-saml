@@ -8,6 +8,7 @@ import com.onelogin.saml2.settings.Saml2Settings;
 import javax.inject.Inject;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
+import java.net.URLEncoder;
 
 public class SamlService {
 
@@ -22,12 +23,11 @@ public class SamlService {
         }
     }
 
-    public String generateSamlLoginUrl(com.manywho.services.saml.entities.Configuration configuration) throws IOException, XMLStreamException {
+    public String generateSamlLoginUrl(com.manywho.services.saml.entities.Configuration configuration) throws IOException {
         Saml2Settings appSettings = new ManyWhoSaml2Settings(configuration);
 
         AuthnRequest authReq = new AuthnRequest(appSettings, false, false, false);
 
-
-        return configuration.getLoginUrl() + "?SAMLRequest=" + authReq.getEncodedAuthnRequest();
+        return configuration.getLoginUrl() + "?SAMLRequest=" + URLEncoder.encode(authReq.getEncodedAuthnRequest(), "UTF-8");
     }
 }
