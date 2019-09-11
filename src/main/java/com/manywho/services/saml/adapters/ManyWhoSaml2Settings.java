@@ -8,9 +8,14 @@ import org.apache.xml.security.utils.Base64;
 import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 
 public class ManyWhoSaml2Settings extends Saml2Settings {
 
@@ -57,6 +62,15 @@ public class ManyWhoSaml2Settings extends Saml2Settings {
             throw new RuntimeException(e);
         }
 
+        if (!StringUtils.isEmpty(configuration.getSpPrivateKey())) {
+            try {
+                this.setSpPrivateKey(parsePrivateKey(configuration.getSpPrivateKey()));
+            } catch (Base64DecodingException | InvalidKeySpecException | NoSuchAlgorithmException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
+
     }
 
     public static X509Certificate parseCertificate(String certificate) throws CertificateException, Base64DecodingException {
@@ -66,5 +80,17 @@ public class ManyWhoSaml2Settings extends Saml2Settings {
         ByteArrayInputStream is = new ByteArrayInputStream(decoded);
 
         return (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(is);
+    }
+
+    public static PrivateKey parsePrivateKey(String privateKey) throws Base64DecodingException, InvalidKeySpecException, NoSuchAlgorithmException {
+        String privateKeyBody = privateKey
+            .replaceAll("-----BEGIN PRIVATE KEY-----", "")
+            .replaceAll("-----END PRIVATE KEY-----", "");
+
+        byte[] decoded = java.util.Base64.getDecoder().decode(privateKeyBody);
+
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(decoded));
+
     }
 }

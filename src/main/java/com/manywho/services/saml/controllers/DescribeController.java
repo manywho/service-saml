@@ -25,6 +25,7 @@ public class DescribeController {
                 .setCulture(new Culture("EN", "US"))
                 .setConfigurationValues(new DescribeValueCollection(
                         new DescribeValue("Certificate", ContentType.Encrypted, true),
+                        new DescribeValue("SP Private Key", ContentType.Encrypted, false),
                         new DescribeValue("Login URL", ContentType.String, true),
                         new DescribeValue("Assertion Consumer Service (URL)", ContentType.String, true),
                         new DescribeValue("Identifier of the IdP entity (URI)", ContentType.String, false),
