@@ -93,7 +93,7 @@ public class ManyWhoSaml2Settings extends Saml2Settings {
             return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(decoded));
         }
         catch (InvalidKeySpecException e) {
-            throw new RuntimeException("There was an error decoding the Private Key (only RSA is currently supported)", e);
+            throw new RuntimeException("There was an error decoding the Private Key (only RSA PKCS#8 is currently supported)", e);
         }
 
     }
