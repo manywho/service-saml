@@ -38,7 +38,19 @@
         <dependency>
             <groupId>com.onelogin</groupId>
             <artifactId>java-saml</artifactId>
-            <version>2.1.0</version>
+            <version>2.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>2.23.0</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
