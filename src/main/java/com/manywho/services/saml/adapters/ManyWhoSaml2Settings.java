@@ -67,10 +67,9 @@ public class ManyWhoSaml2Settings extends Saml2Settings {
                 this.setSpPrivateKey(parsePrivateKey(configuration.getSpPrivateKey()));
             } catch (Base64DecodingException | InvalidKeySpecException | NoSuchAlgorithmException e) {
                 e.printStackTrace();
-                throw new RuntimeException(e);
+                throw new RuntimeException("Error parsing Service Provider Private Key", e);
             }
         }
-
     }
 
     public static X509Certificate parseCertificate(String certificate) throws CertificateException, Base64DecodingException {
@@ -87,10 +86,15 @@ public class ManyWhoSaml2Settings extends Saml2Settings {
             .replaceAll("-----BEGIN PRIVATE KEY-----", "")
             .replaceAll("-----END PRIVATE KEY-----", "");
 
-        byte[] decoded = java.util.Base64.getDecoder().decode(privateKeyBody);
+        byte[] decoded = Base64.decode(privateKeyBody);
 
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(decoded));
+        try {
+            return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(decoded));
+        }
+        catch (InvalidKeySpecException e) {
+            throw new RuntimeException("There was an error decoding the Private Key (only RSA is currently supported", e);
+        }
 
     }
 }
