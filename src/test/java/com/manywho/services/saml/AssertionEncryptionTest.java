@@ -47,7 +47,9 @@ public class AssertionEncryptionTest {
         Assert.assertEquals("name", handler.getFirstName());
         Assert.assertEquals("surname", handler.getLastName());
         Assert.assertNull(handler.getError());
-        Assert.assertTrue(handler.getGroups().isEmpty());
+        Assert.assertEquals(1, handler.getGroups().size());
+        Assert.assertEquals("", handler.getGroups().get(0));
+
     }
 
     private String getFileContent(String path) throws IOException {
