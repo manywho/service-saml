@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
 public class AssertionEncryptionTest {
 
     @Test
-    public void testEncryption() throws Exception {
+    public void testEncryptSamlAssertion() throws Exception {
         // if I remove this line the encryption doesn't works
         org.apache.xml.security.Init.init();
 
