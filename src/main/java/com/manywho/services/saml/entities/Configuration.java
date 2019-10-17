@@ -11,6 +11,9 @@ public class Configuration {
     @Property("Certificate")
     private String certificate;
 
+    @Property("SP Private Key")
+    private String privateKey;
+
     @NotBlank(message = "A valid login URL must be provided")
     @URL(message = "A valid login URL must be provided")
     @Property("Login URL")
@@ -39,6 +42,10 @@ public class Configuration {
 
     public String getCertificate() {
         return certificate;
+    }
+
+    public String getSpPrivateKey() {
+        return privateKey;
     }
 
     public String getLoginUrl() {
