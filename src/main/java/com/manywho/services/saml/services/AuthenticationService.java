@@ -42,7 +42,7 @@ public class AuthenticationService {
 
         result.setStatus(AuthenticationStatus.Authenticated);
         result.setTenantName("SAML");
-        result.setToken(jwtService.sign(response.getNameIdentifier()));
+        result.setToken(jwtService.sign(response.getNameIdentifier(), response.getResponse().getNotBefore(), response.getResponse().getNotAfter()));
         result.setUserId(response.getNameIdentifier());
         result.setUsername(response.getNameIdentifier());
 

@@ -1,26 +1,63 @@
 package com.manywho.services.saml.services;
 
-import com.auth0.jwt.JWTSigner;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.joda.time.DateTime;
-
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
 
 public class JwtService {
-    private final JWTSigner jwtSigner;
+    private Algorithm algorithm;
+    private JWTVerifier verifier;
 
     @Inject
-    public JwtService(JWTSigner jwtSigner) {
-        this.jwtSigner = jwtSigner;
+    public JwtService(String secret) {
+        algorithm = Algorithm.HMAC256(secret);
+        verifier = JWT.require(algorithm)
+                .withIssuer("saml-service")
+                .acceptLeeway(1)   //1 sec for nbf and iat
+                .acceptExpiresAt(5)   //5 secs for exp
+                .build();
     }
 
-    public String sign(String identifier) {
-        Map<String, Object> jwtClaims = new HashMap<>();
-        jwtClaims.put("sub", identifier);
-        jwtClaims.put("iat", DateTime.now().getMillis() / 1000);
-        jwtClaims.put("exp", new DateTime().plusWeeks(2).getMillis() / 1000);
+    public String sign(String identifier, DateTime notBefore, DateTime notAfter) {
+        try {
+            long notAfterSeconds = DateTime.now().plusHours(1).getMillis() / 1000;
+            long notBeforeSeconds = DateTime.now().getMillis() / 1000;
 
-        return jwtSigner.sign(jwtClaims);
+            if (notBefore != null) {
+                    notBeforeSeconds = notBefore.getMillis() / 1000;
+            }
+
+            if( notAfter != null) {
+                notAfterSeconds = notAfter.getMillis() / 1000;
+            }
+
+            String token = JWT.create()
+                    .withIssuer("saml-service")
+                    .withClaim("sub", identifier)
+                    .withClaim("iat", DateTime.now().getMillis() / 1000)
+                    .withClaim("exp", notAfterSeconds)
+                    .withClaim("nbf", notBeforeSeconds)
+                    .sign(algorithm);
+
+            return token;
+        } catch (JWTCreationException exception){
+            //Invalid Signing configuration / Couldn't convert Claims.
+        }
+
+        throw new RuntimeException("Not possible to create token");
+    }
+
+    public boolean verify(String token) {
+        try{
+            DecodedJWT jwt = verifier.verify(token);
+        } catch (JWTVerificationException exception){
+            return false;
+        }
+        return true;
     }
 }

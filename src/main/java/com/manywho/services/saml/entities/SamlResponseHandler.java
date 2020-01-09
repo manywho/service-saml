@@ -25,6 +25,10 @@ public class SamlResponseHandler {
         }
     }
 
+    public ManyWhoSamlResponse getResponse() {
+        return response;
+    }
+
     public String getEmailAddress() {
         return this.getAttribute("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress");
     }
