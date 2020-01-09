@@ -39,22 +39,22 @@ public class ManyWhoSamlResponse extends SamlResponse {
         if (timestampNodes.getLength() != 0) {
             for(int i = 0; i < timestampNodes.getLength(); ++i) {
                 NamedNodeMap attrName = timestampNodes.item(i).getAttributes();
-                Node nbAttribute = attrName.getNamedItem("NotBefore");
-                Node naAttribute = attrName.getNamedItem("NotOnOrAfter");
-                DateTime notAfterDate;
+                Node notBeforeAttribute = attrName.getNamedItem("NotBefore");
+                Node notAfterAttribute = attrName.getNamedItem("NotOnOrAfter");
 
-                if (naAttribute != null) {
-                    notAfterDate = Util.parseDateTime(naAttribute.getNodeValue());
-                    notAfter = afterDate(notAfter, notAfterDate);
+                if (notAfterAttribute != null) {
+                    notAfter = moreRestrictiveAfterDate(notAfter, dateTimeFromString(notAfterAttribute.getNodeValue()));
                 }
 
-                DateTime notBeforeDate;
-                if (nbAttribute != null) {
-                    notBeforeDate = Util.parseDateTime(nbAttribute.getNodeValue());
-                    notBefore = beforeDate(notBefore, notBeforeDate);
+                if (notBeforeAttribute != null) {
+                    notBefore = moreRestrictiveBeforeDate(notBefore, dateTimeFromString(notBeforeAttribute.getNodeValue()));
                 }
             }
         }
+    }
+
+    private DateTime dateTimeFromString(String value) {
+        return Util.parseDateTime(value);
     }
 
     /**
@@ -63,7 +63,7 @@ public class ManyWhoSamlResponse extends SamlResponse {
      * @param newTime
      * @return
      */
-    private DateTime beforeDate(DateTime current, DateTime newTime){
+    private DateTime moreRestrictiveBeforeDate(DateTime current, DateTime newTime){
         if (newTime == null) {
             return current;
         }
@@ -85,7 +85,7 @@ public class ManyWhoSamlResponse extends SamlResponse {
      * @param newTime
      * @return
      */
-    private DateTime afterDate(DateTime current, DateTime newTime){
+    private DateTime moreRestrictiveAfterDate(DateTime current, DateTime newTime){
         if (newTime == null) {
             return current;
         }
@@ -100,7 +100,4 @@ public class ManyWhoSamlResponse extends SamlResponse {
 
         return current;
     }
-
-
-
 }
