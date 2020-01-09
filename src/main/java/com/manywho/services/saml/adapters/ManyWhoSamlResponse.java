@@ -57,12 +57,6 @@ public class ManyWhoSamlResponse extends SamlResponse {
         return Util.parseDateTime(value);
     }
 
-    /**
-     * mayor not null of not before
-     * @param current
-     * @param newTime
-     * @return
-     */
     private DateTime moreRestrictiveBeforeDate(DateTime current, DateTime newTime){
         if (newTime == null) {
             return current;
@@ -78,13 +72,7 @@ public class ManyWhoSamlResponse extends SamlResponse {
 
         return current;
     }
-
-    /**
-     * minor not null of not after date
-     * @param current
-     * @param newTime
-     * @return
-     */
+    
     private DateTime moreRestrictiveAfterDate(DateTime current, DateTime newTime){
         if (newTime == null) {
             return current;
