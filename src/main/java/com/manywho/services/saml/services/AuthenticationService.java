@@ -26,6 +26,19 @@ public class AuthenticationService {
     }
 
     public AuthenticatedWhoResult createAuthenticatedWhoResult(SamlResponseHandler response) throws Exception {
+
+        if (response.isValid() == false) {
+            return createAuthenticatedWhoResultWithError(response.getError());
+        }
+
+        String jwtToken = jwtService.sign(response.getNameIdentifier(), response.getResponse().getNotBefore(), response.getResponse().getNotAfter());
+
+        try {
+            jwtService.validate(jwtToken);
+        } catch (Exception e) {
+            return createAuthenticatedWhoResultWithError(e.getMessage());
+        }
+
         AuthenticatedWhoResult result = new AuthenticatedWhoResult();
 
         result.setDirectoryId("SAML");
@@ -42,7 +55,7 @@ public class AuthenticationService {
 
         result.setStatus(AuthenticationStatus.Authenticated);
         result.setTenantName("SAML");
-        result.setToken(jwtService.sign(response.getNameIdentifier(), response.getResponse().getNotBefore(), response.getResponse().getNotAfter()));
+        result.setToken(jwtToken);
         result.setUserId(response.getNameIdentifier());
         result.setUsername(response.getNameIdentifier());
 

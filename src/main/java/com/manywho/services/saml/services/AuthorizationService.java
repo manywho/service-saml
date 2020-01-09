@@ -30,7 +30,7 @@ public class AuthorizationService {
                 return "200";
             case AllUsers:
                 if (!user.getUserId().equalsIgnoreCase("PUBLIC_USER")) {
-                    if (jwtService.verify(user.getToken()) == false) {
+                    if (jwtService.isValid(user.getToken()) == false) {
                         return "401";
                     }
                     return "200";
@@ -39,7 +39,7 @@ public class AuthorizationService {
                 }
             case Specified:
                 if (!user.getUserId().equalsIgnoreCase("PUBLIC_USER")) {
-                    if (jwtService.verify(user.getToken()) == false) {
+                    if (jwtService.isValid(user.getToken()) == false) {
                         return "401";
                     }
 

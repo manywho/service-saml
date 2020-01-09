@@ -11,7 +11,7 @@ public class SamlServiceTest {
         JwtService service = new JwtService("test-secret");
         String token = service.sign("123456", DateTime.now().minusSeconds(10), DateTime.now().plusSeconds(10));
 
-        Assert.assertTrue(service.verify(token));
+        Assert.assertTrue(service.isValid(token));
     }
 
     @Test
@@ -19,7 +19,7 @@ public class SamlServiceTest {
         JwtService service = new JwtService("test-secret");
         String token = service.sign("123456", DateTime.now().minusSeconds(20), DateTime.now().minusSeconds(10));
 
-        Assert.assertFalse(service.verify(token));
+        Assert.assertFalse(service.isValid(token));
     }
 
     @Test
@@ -28,6 +28,6 @@ public class SamlServiceTest {
         // the not before date is set in the future so the verification fails
         String token = service.sign("123456", DateTime.now().plusSeconds(10), DateTime.now().plusSeconds(20));
 
-        Assert.assertFalse(service.verify(token));
+        Assert.assertFalse(service.isValid(token));
     }
 }

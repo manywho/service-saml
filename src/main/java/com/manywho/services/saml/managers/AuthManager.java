@@ -37,10 +37,6 @@ public class AuthManager {
     public AuthenticatedWhoResult authentication(Configuration configuration, AuthenticationCredentials authenticationCredentials) throws Exception {
         SamlResponseHandler response = samlService.decryptResponse(configuration, authenticationCredentials.getCode(), authenticationCredentials.getRedirectUri());
 
-        if (!response.isValid()) {
-            return authenticationService.createAuthenticatedWhoResultWithError(response.getError());
-        }
-
         return authenticationService.createAuthenticatedWhoResult(response);
     }
 

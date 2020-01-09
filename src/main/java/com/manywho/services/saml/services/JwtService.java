@@ -52,12 +52,18 @@ public class JwtService {
         throw new RuntimeException("Not possible to create token");
     }
 
-    public boolean verify(String token) {
+    public boolean isValid(String token) {
         try{
             DecodedJWT jwt = verifier.verify(token);
         } catch (JWTVerificationException exception){
             return false;
         }
         return true;
+    }
+
+
+    public void validate(String token) {
+        // it will throw an exception if the window time between not before and not after is wrong
+        verifier.verify(token);
     }
 }
