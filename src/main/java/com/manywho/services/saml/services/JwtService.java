@@ -3,7 +3,6 @@ package com.manywho.services.saml.services;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.joda.time.DateTime;
@@ -24,32 +23,25 @@ public class JwtService {
     }
 
     public String sign(String identifier, DateTime notBefore, DateTime notAfter) {
-        try {
-            long notAfterSeconds = DateTime.now().plusHours(1).getMillis() / 1000;
-            long notBeforeSeconds = DateTime.now().getMillis() / 1000;
 
-            if (notBefore != null) {
-                    notBeforeSeconds = notBefore.getMillis() / 1000;
-            }
+        long notAfterSeconds = DateTime.now().plusHours(1).getMillis() / 1000;
+        long notBeforeSeconds = DateTime.now().getMillis() / 1000;
 
-            if( notAfter != null) {
-                notAfterSeconds = notAfter.getMillis() / 1000;
-            }
-
-            String token = JWT.create()
-                    .withIssuer("saml-service")
-                    .withClaim("sub", identifier)
-                    .withClaim("iat", DateTime.now().getMillis() / 1000)
-                    .withClaim("exp", notAfterSeconds)
-                    .withClaim("nbf", notBeforeSeconds)
-                    .sign(algorithm);
-
-            return token;
-        } catch (JWTCreationException exception){
-            //Invalid Signing configuration / Couldn't convert Claims.
+        if (notBefore != null) {
+            notBeforeSeconds = notBefore.getMillis() / 1000;
         }
 
-        throw new RuntimeException("Not possible to create token");
+        if( notAfter != null) {
+            notAfterSeconds = notAfter.getMillis() / 1000;
+        }
+
+        return JWT.create()
+                .withIssuer("saml-service")
+                .withClaim("sub", identifier)
+                .withClaim("iat", DateTime.now().getMillis() / 1000)
+                .withClaim("exp", notAfterSeconds)
+                .withClaim("nbf", notBeforeSeconds)
+                .sign(algorithm);
     }
 
     public boolean isValid(String token) {
@@ -62,7 +54,7 @@ public class JwtService {
     }
 
 
-    public void validate(String token) {
+    void validate(String token) {
         // it will throw an exception if the window time between not before and not after is wrong
         verifier.verify(token);
     }
