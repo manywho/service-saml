@@ -31,9 +31,10 @@ public class AuthenticationService {
             return createAuthenticatedWhoResultWithError(response.getError());
         }
 
-        String jwtToken = jwtService.sign(response.getNameIdentifier(), response.getResponse().getNotBefore(), response.getResponse().getNotAfter());
+        String jwtToken;
 
         try {
+            jwtToken = jwtService.sign(response.getNameIdentifier(), response.getResponse().getNotBefore(), response.getResponse().getNotAfter());
             jwtService.validate(jwtToken);
         } catch (Exception e) {
             return createAuthenticatedWhoResultWithError(e.getMessage());
