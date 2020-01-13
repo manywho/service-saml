@@ -50,10 +50,10 @@ public class AuthManager {
      */
     public ObjectDataResponse authorization(Configuration configuration, ObjectDataRequest objectDataRequest, AuthenticatedWho authenticatedWho) throws Exception {
         String status = authorizationService.getStatus(objectDataRequest.getAuthorization(), authenticatedWho);
-        String loginUrl = samlService.generateSamlLoginUrl(configuration);
+        String loginUrl = "";
 
         if (authorizationService.shouldCleanLoginUrl(objectDataRequest.getAuthorization(), authenticatedWho, status)) {
-            loginUrl = "";
+            loginUrl = samlService.generateSamlLoginUrl(configuration);
         }
 
         UserObject user = authorizationService.createUserObject(authenticatedWho, loginUrl, status);
