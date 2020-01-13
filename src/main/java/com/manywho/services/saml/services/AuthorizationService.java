@@ -3,6 +3,7 @@ package com.manywho.services.saml.services;
 import com.manywho.sdk.entities.UserObject;
 import com.manywho.sdk.entities.run.elements.config.Authorization;
 import com.manywho.sdk.entities.security.AuthenticatedWho;
+import com.manywho.sdk.enums.AuthenticationType;
 import com.manywho.sdk.enums.AuthorizationType;
 import com.manywho.services.saml.managers.CacheManager;
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,7 +26,8 @@ public class AuthorizationService {
                 authenticatedWho.getUsername(), authenticatedWho.getEmail(), authenticatedWho.getFirstName());
     }
 
-    public String getStatus(Authorization authorization,  AuthenticatedWho user) throws Exception { switch (authorization.getGlobalAuthenticationType()) {
+    public String getStatus(Authorization authorization,  AuthenticatedWho user) throws Exception {
+        switch (authorization.getGlobalAuthenticationType()) {
             case Public:
                 return "200";
             case AllUsers:
@@ -53,7 +55,6 @@ public class AuthorizationService {
                                 validGroup = true;
                             }
                         }
-
                     }
 
                     if (CollectionUtils.isNotEmpty(authorization.getUsers())) {
@@ -70,5 +71,17 @@ public class AuthorizationService {
             default:
                 return "401";
         }
+    }
+
+
+    public boolean shouldCleanLoginUrl(Authorization authorization,  AuthenticatedWho user, String status) {
+        if (authorization.getGlobalAuthenticationType() == AuthenticationType.Specified &&
+                user.getUserId().equalsIgnoreCase("PUBLIC_USER") == false &&
+                jwtService.isValid(user.getToken()) &&
+                status.equalsIgnoreCase("401")) {
+            return true;
+        }
+
+        return false;
     }
 }
