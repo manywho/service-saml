@@ -52,7 +52,7 @@ public class AuthManager {
         String status = authorizationService.getStatus(objectDataRequest.getAuthorization(), authenticatedWho);
         String loginUrl = "";
 
-        if (authorizationService.shouldCleanLoginUrl(objectDataRequest.getAuthorization(), authenticatedWho, status)) {
+        if (authorizationService.shouldSendLoginUrl(objectDataRequest.getAuthorization(), authenticatedWho, status)) {
             loginUrl = samlService.generateSamlLoginUrl(configuration);
         }
 
