@@ -31,20 +31,17 @@ public class AuthorizationService {
             case Public:
                 return "200";
             case AllUsers:
-                if (!user.getUserId().equalsIgnoreCase("PUBLIC_USER")) {
-                    if (jwtService.isValid(user.getToken()) == false) {
-                        return "401";
-                    }
-                    return "200";
-                } else {
+                if (user.getUserId().equalsIgnoreCase("PUBLIC_USER")) {
                     return "401";
+                } else if (jwtService.isValid(user.getToken())) {
+                    return "200";
                 }
-            case Specified:
-                if (!user.getUserId().equalsIgnoreCase("PUBLIC_USER")) {
-                    if (jwtService.isValid(user.getToken()) == false) {
-                        return "401";
-                    }
 
+                return "401";
+            case Specified:
+                if (user.getUserId().equalsIgnoreCase("PUBLIC_USER")) {
+                    return "401";
+                } else if (jwtService.isValid(user.getToken())) {
                     boolean validGroup = false;
                     boolean validUser = false;
 
@@ -66,22 +63,24 @@ public class AuthorizationService {
                     if (validGroup || validUser) {
                         return "200";
                     }
-
                 }
+
+                return "401";
             default:
                 return "401";
         }
     }
 
 
-    public boolean shouldCleanLoginUrl(Authorization authorization,  AuthenticatedWho user, String status) {
-        if (authorization.getGlobalAuthenticationType() == AuthenticationType.Specified &&
-                user.getUserId().equalsIgnoreCase("PUBLIC_USER") == false &&
+    public boolean shouldSendLoginUrl(Authorization authorization, AuthenticatedWho user, String status) {
+        if (user.getUserId().equalsIgnoreCase("PUBLIC_USER") == false &&
+                authorization.getGlobalAuthenticationType() == AuthenticationType.Specified &&
                 jwtService.isValid(user.getToken()) &&
                 status.equalsIgnoreCase("401")) {
-            return true;
+            
+            return false;
         }
 
-        return false;
+        return true;
     }
 }
