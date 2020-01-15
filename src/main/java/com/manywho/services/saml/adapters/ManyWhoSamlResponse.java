@@ -4,8 +4,6 @@ import com.onelogin.saml2.authn.SamlResponse;
 import com.onelogin.saml2.exception.SettingsException;
 import com.onelogin.saml2.exception.ValidationError;
 import com.onelogin.saml2.settings.Saml2Settings;
-import com.onelogin.saml2.util.Util;
-import org.joda.time.DateTime;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -13,11 +11,13 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class ManyWhoSamlResponse extends SamlResponse {
 
-    private DateTime notBefore;
-    private DateTime notAfter;
+    private LocalDateTime notBefore;
+    private LocalDateTime notAfter;
 
     public ManyWhoSamlResponse(Saml2Settings settings, String samlResponse, String currentUrl) throws ValidationError, SAXException, XPathExpressionException, SettingsException, ParserConfigurationException, IOException {
         super(settings, null);
@@ -26,11 +26,11 @@ public class ManyWhoSamlResponse extends SamlResponse {
         setNotBeforeAndNotAfterFromConditions();
     }
 
-    public DateTime getNotBefore() {
+    public LocalDateTime getNotBefore() {
         return notBefore;
     }
 
-    public DateTime getNotAfter() {
+    public LocalDateTime getNotAfter() {
         return notAfter;
     }
 
@@ -53,11 +53,11 @@ public class ManyWhoSamlResponse extends SamlResponse {
         }
     }
 
-    private DateTime dateTimeFromString(String value) {
-        return Util.parseDateTime(value);
+    private LocalDateTime dateTimeFromString(String value) {
+        return LocalDateTime.parse(value, DateTimeFormatter.ISO_DATE_TIME);
     }
 
-    private DateTime moreRestrictiveBeforeDate(DateTime current, DateTime newTime){
+    private LocalDateTime moreRestrictiveBeforeDate(LocalDateTime current, LocalDateTime newTime){
         if (newTime == null) {
             return current;
         }
@@ -66,14 +66,14 @@ public class ManyWhoSamlResponse extends SamlResponse {
             return newTime;
         }
 
-        if (newTime.getMillis() > current.getMillis()) {
+        if (newTime.getNano() > current.getNano()) {
             return newTime;
         }
 
         return current;
     }
     
-    private DateTime moreRestrictiveAfterDate(DateTime current, DateTime newTime){
+    private LocalDateTime moreRestrictiveAfterDate(LocalDateTime current, LocalDateTime newTime){
         if (newTime == null) {
             return current;
         }
@@ -82,7 +82,7 @@ public class ManyWhoSamlResponse extends SamlResponse {
             return newTime;
         }
 
-        if (newTime.getMillis() < current.getMillis()) {
+        if (newTime.getNano() < current.getNano()) {
             return newTime;
         }
 
