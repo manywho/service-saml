@@ -1,12 +1,12 @@
 package com.manywho.services.saml.services;
 
+import com.manywho.sdk.entities.run.elements.config.Authorization;
 import com.manywho.services.saml.adapters.ManyWhoSaml2Settings;
 import com.manywho.services.saml.entities.Configuration;
 import com.manywho.services.saml.entities.SamlResponseHandler;
 import com.onelogin.saml2.authn.*;
 import com.onelogin.saml2.settings.Saml2Settings;
 import javax.inject.Inject;
-import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.net.URLEncoder;
 
@@ -23,7 +23,7 @@ public class SamlService {
         }
     }
 
-    public String generateSamlLoginUrl(com.manywho.services.saml.entities.Configuration configuration) throws IOException {
+    public String generateSamlLoginUrl(Configuration configuration) throws IOException {
         Saml2Settings appSettings = new ManyWhoSaml2Settings(configuration);
 
         AuthnRequest authReq = new AuthnRequest(appSettings, false, false, false);

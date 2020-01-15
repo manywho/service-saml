@@ -5,7 +5,8 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import javax.inject.Inject;
 
 public class JwtService {
@@ -22,23 +23,22 @@ public class JwtService {
                 .build();
     }
 
-    public String sign(String identifier, DateTime notBefore, DateTime notAfter) {
-
-        long notAfterSeconds = DateTime.now().plusHours(1).getMillis() / 1000;
-        long notBeforeSeconds = DateTime.now().getMillis() / 1000;
+    public String sign(String identifier, LocalDateTime notBefore, LocalDateTime notAfter) {
+        long notAfterSeconds = LocalDateTime.now().plusMinutes(14).toEpochSecond(ZoneOffset.UTC);
+        long notBeforeSeconds = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
         if (notBefore != null) {
-            notBeforeSeconds = notBefore.getMillis() / 1000;
+            notBeforeSeconds = notBefore.atOffset(ZoneOffset.UTC).toEpochSecond();
         }
 
         if( notAfter != null) {
-            notAfterSeconds = notAfter.getMillis() / 1000;
+            notAfterSeconds = notAfter.atOffset(ZoneOffset.UTC).toEpochSecond();
         }
 
         return JWT.create()
                 .withIssuer("saml-service")
                 .withClaim("sub", identifier)
-                .withClaim("iat", DateTime.now().getMillis() / 1000)
+                .withClaim("iat", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
                 .withClaim("exp", notAfterSeconds)
                 .withClaim("nbf", notBeforeSeconds)
                 .sign(algorithm);

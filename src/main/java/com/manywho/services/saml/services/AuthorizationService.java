@@ -3,6 +3,7 @@ package com.manywho.services.saml.services;
 import com.manywho.sdk.entities.UserObject;
 import com.manywho.sdk.entities.run.elements.config.Authorization;
 import com.manywho.sdk.entities.security.AuthenticatedWho;
+import com.manywho.sdk.enums.AuthenticationType;
 import com.manywho.sdk.enums.AuthorizationType;
 import com.manywho.services.saml.managers.CacheManager;
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,24 +26,22 @@ public class AuthorizationService {
                 authenticatedWho.getUsername(), authenticatedWho.getEmail(), authenticatedWho.getFirstName());
     }
 
-    public String getStatus(Authorization authorization,  AuthenticatedWho user) throws Exception { switch (authorization.getGlobalAuthenticationType()) {
+    public String getStatus(Authorization authorization,  AuthenticatedWho user) throws Exception {
+        switch (authorization.getGlobalAuthenticationType()) {
             case Public:
                 return "200";
             case AllUsers:
-                if (!user.getUserId().equalsIgnoreCase("PUBLIC_USER")) {
-                    if (jwtService.isValid(user.getToken()) == false) {
-                        return "401";
-                    }
-                    return "200";
-                } else {
+                if (user.getUserId().equalsIgnoreCase("PUBLIC_USER")) {
                     return "401";
+                } else if (jwtService.isValid(user.getToken())) {
+                    return "200";
                 }
-            case Specified:
-                if (!user.getUserId().equalsIgnoreCase("PUBLIC_USER")) {
-                    if (jwtService.isValid(user.getToken()) == false) {
-                        return "401";
-                    }
 
+                return "401";
+            case Specified:
+                if (user.getUserId().equalsIgnoreCase("PUBLIC_USER")) {
+                    return "401";
+                } else if (jwtService.isValid(user.getToken())) {
                     boolean validGroup = false;
                     boolean validUser = false;
 
@@ -53,7 +52,6 @@ public class AuthorizationService {
                                 validGroup = true;
                             }
                         }
-
                     }
 
                     if (CollectionUtils.isNotEmpty(authorization.getUsers())) {
@@ -65,10 +63,24 @@ public class AuthorizationService {
                     if (validGroup || validUser) {
                         return "200";
                     }
-
                 }
+
+                return "401";
             default:
                 return "401";
         }
+    }
+
+
+    public boolean shouldSendLoginUrl(Authorization authorization, AuthenticatedWho user, String status) {
+        if (user.getUserId().equalsIgnoreCase("PUBLIC_USER") == false &&
+                authorization.getGlobalAuthenticationType() == AuthenticationType.Specified &&
+                jwtService.isValid(user.getToken()) &&
+                status.equalsIgnoreCase("401")) {
+            
+            return false;
+        }
+
+        return true;
     }
 }
