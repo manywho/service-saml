@@ -37,10 +37,6 @@ public class AuthManager {
     public AuthenticatedWhoResult authentication(Configuration configuration, AuthenticationCredentials authenticationCredentials) throws Exception {
         SamlResponseHandler response = samlService.decryptResponse(configuration, authenticationCredentials.getCode(), authenticationCredentials.getRedirectUri());
 
-        if (!response.isValid()) {
-            return authenticationService.createAuthenticatedWhoResultWithError(response.getError());
-        }
-
         return authenticationService.createAuthenticatedWhoResult(response);
     }
 
@@ -54,7 +50,13 @@ public class AuthManager {
      */
     public ObjectDataResponse authorization(Configuration configuration, ObjectDataRequest objectDataRequest, AuthenticatedWho authenticatedWho) throws Exception {
         String status = authorizationService.getStatus(objectDataRequest.getAuthorization(), authenticatedWho);
-        UserObject user = authorizationService.createUserObject(authenticatedWho, samlService.generateSamlLoginUrl(configuration), status);
+        String loginUrl = "";
+
+        if (authorizationService.shouldSendLoginUrl(objectDataRequest.getAuthorization(), authenticatedWho, status)) {
+            loginUrl = samlService.generateSamlLoginUrl(configuration);
+        }
+
+        UserObject user = authorizationService.createUserObject(authenticatedWho, loginUrl, status);
 
         return new ObjectDataResponse(user);
     }

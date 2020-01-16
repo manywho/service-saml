@@ -3,6 +3,7 @@
     <target name="generate-properties" description="Generate the properties file from the given system properties">
         <propertyfile file="src/main/resources/service.properties">
             <entry key="redis.url" value="${redis.url}"/>
+            <entry key="secret" value="${secret}" />
         </propertyfile>
     </target>
 </project>
