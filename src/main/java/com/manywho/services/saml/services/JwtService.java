@@ -7,13 +7,11 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import javax.inject.Inject;
 
 public class JwtService {
     private Algorithm algorithm;
     private JWTVerifier verifier;
 
-    @Inject
     public JwtService(String secret) {
         algorithm = Algorithm.HMAC256(secret);
         verifier = JWT.require(algorithm)
