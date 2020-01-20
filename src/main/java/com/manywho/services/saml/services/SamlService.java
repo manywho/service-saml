@@ -3,14 +3,12 @@ package com.manywho.services.saml.services;
 import com.manywho.services.saml.adapters.ManyWhoSaml2Settings;
 import com.manywho.services.saml.entities.Configuration;
 import com.manywho.services.saml.entities.SamlResponseHandler;
+import com.manywho.services.saml.utils.SamlRequestGenerator;
 import com.onelogin.saml2.authn.*;
 import com.onelogin.saml2.settings.Saml2Settings;
-import org.apache.http.client.utils.URIBuilder;
 import javax.inject.Inject;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 
 public class SamlService {
 
@@ -25,14 +23,10 @@ public class SamlService {
         }
     }
 
-    public String generateSamlLoginUrl(Configuration configuration) throws IOException, URISyntaxException {
+    public String generateSamlLoginUrl(Configuration configuration) throws URISyntaxException, IOException {
         Saml2Settings appSettings = new ManyWhoSaml2Settings(configuration);
-
         AuthnRequest authReq = new AuthnRequest(appSettings, false, false, false);
 
-        URI uriRedirect = new URIBuilder(configuration.getLoginUrl())
-                .addParameter("SAMLRequest", URLEncoder.encode(authReq.getEncodedAuthnRequest(), "UTF-8")).build();
-
-        return uriRedirect.toString();
+        return SamlRequestGenerator.generateLoginRequest(configuration.getLoginUrl(), authReq.getEncodedAuthnRequest());
     }
 }
