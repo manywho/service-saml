@@ -8,7 +8,7 @@ import java.net.URISyntaxException;
 
 public class SamlRequestGeneratorTest {
     @Test
-    public void testGenerateUrl() throws URISyntaxException {
+    public void testGenerateSamlRequestUrl() throws URISyntaxException {
         String samlEncodedAuthRequest = "jadsifdsf=fsjdsof!";
 
         Assert.assertEquals("https://test.idp?abc=123&SAMLRequest=jadsifdsf%3Dfsjdsof%21",
