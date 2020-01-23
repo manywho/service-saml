@@ -48,7 +48,7 @@ public class AuthorizationService {
                     if (CollectionUtils.isNotEmpty(authorization.getGroups())) {
                         ArrayList<String> userGroups = cacheManager.getUserGroups(user.getUserId());
                         for (String group: userGroups) {
-                            if (authorization.getGroups().stream().anyMatch(m -> m.equals(group))) {
+                            if (authorization.getGroups().stream().anyMatch(m -> m.getAuthenticationId().equals(group))) {
                                 validGroup = true;
                             }
                         }
