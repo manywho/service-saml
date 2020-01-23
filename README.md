@@ -3,8 +3,6 @@ SAML Authentication service
 
 This service allows you to authenticate in yours flow using saml.
 
-This service is under active development and is not stable.
-
 #### Building
 
 To build the service, you will need to have Apache Ant, Maven 3 and a Java 8, and  a redis database.

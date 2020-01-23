@@ -44,28 +44,4 @@ public class SamlServiceTest {
 
         Assert.assertFalse(service.isValid(token));
     }
-
-    @Test
-    public void testGetStatusSpecifiedFlow200GroupAuthorized() throws Exception {
-        CacheManager cacheManager = mock(CacheManager.class);
-        JwtService jwtService = mock(JwtService.class);
-        when(jwtService.isValid(any()))
-                .thenReturn(true);
-        ArrayList<String> userGroups = new ArrayList<>();
-        userGroups.add("group-test");
-        when(cacheManager.getUserGroups("user-test"))
-                .thenReturn(userGroups);
-        AuthorizationService authorizationService = new AuthorizationService(cacheManager, jwtService);
-        Authorization authorization = new Authorization();
-        AuthenticatedWho authenticatedWho = new AuthenticatedWho();
-        authenticatedWho.setUserId("user-test");
-        authorization.setGlobalAuthenticationType(AuthenticationType.Specified);
-        Group groupTest = new Group();
-        groupTest.setAuthenticationId("group-test");
-        GroupCollection groups = new GroupCollection();
-        groups.add(groupTest);
-        authorization.setGroups(groups);
-        String actualStatus = authorizationService.getStatus(authorization, authenticatedWho);
-        Assert.assertEquals("200", actualStatus);
-    }
 }
