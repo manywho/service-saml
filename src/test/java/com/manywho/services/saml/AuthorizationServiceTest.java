@@ -1,8 +1,6 @@
 package com.manywho.services.saml;
 
-import com.manywho.sdk.entities.run.elements.config.Authorization;
-import com.manywho.sdk.entities.run.elements.config.User;
-import com.manywho.sdk.entities.run.elements.config.UserCollection;
+import com.manywho.sdk.entities.run.elements.config.*;
 import com.manywho.sdk.entities.security.AuthenticatedWho;
 import com.manywho.sdk.enums.AuthenticationType;
 import com.manywho.services.saml.managers.CacheManager;
@@ -10,6 +8,9 @@ import com.manywho.services.saml.services.AuthorizationService;
 import com.manywho.services.saml.services.JwtService;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.ArrayList;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -136,6 +137,30 @@ public class AuthorizationServiceTest {
         users.add(userTest);
         authorization.setUsers(users);
 
+        String actualStatus = authorizationService.getStatus(authorization, authenticatedWho);
+        Assert.assertEquals("200", actualStatus);
+    }
+
+    @Test
+    public void testGetStatusSpecifiedFlow200GroupAuthorized() throws Exception {
+        CacheManager cacheManager = mock(CacheManager.class);
+        JwtService jwtService = mock(JwtService.class);
+        when(jwtService.isValid(any()))
+                .thenReturn(true);
+        ArrayList<String> userGroups = new ArrayList<>();
+        userGroups.add("group-test");
+        when(cacheManager.getUserGroups("user-test"))
+                .thenReturn(userGroups);
+        AuthorizationService authorizationService = new AuthorizationService(cacheManager, jwtService);
+        Authorization authorization = new Authorization();
+        AuthenticatedWho authenticatedWho = new AuthenticatedWho();
+        authenticatedWho.setUserId("user-test");
+        authorization.setGlobalAuthenticationType(AuthenticationType.Specified);
+        Group groupTest = new Group();
+        groupTest.setAuthenticationId("group-test");
+        GroupCollection groups = new GroupCollection();
+        groups.add(groupTest);
+        authorization.setGroups(groups);
         String actualStatus = authorizationService.getStatus(authorization, authenticatedWho);
         Assert.assertEquals("200", actualStatus);
     }
