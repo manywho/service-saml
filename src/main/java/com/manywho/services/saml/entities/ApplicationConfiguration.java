@@ -1,43 +1,44 @@
 package com.manywho.services.saml.entities;
 
-import com.manywho.sdk.services.annotations.Property;
+import com.manywho.sdk.api.ContentType;
+import com.manywho.sdk.services.configuration.Configuration;
 import com.manywho.services.saml.validators.Certificate;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
-public class Configuration {
+public class ApplicationConfiguration  implements Configuration {
     @NotBlank(message = "A certificate must be provided")
     @Certificate
-    @Property("Certificate")
+    @Configuration.Setting(name ="Certificate", contentType = ContentType.Encrypted)
     private String certificate;
 
-    @Property("SP Private Key")
+    @Configuration.Setting(name ="SP Private Key", contentType = ContentType.Encrypted, required = false)
     private String privateKey;
 
     @NotBlank(message = "A valid login URL must be provided")
     @URL(message = "A valid login URL must be provided")
-    @Property("Login URL")
+    @Configuration.Setting(name ="Login URL", contentType = ContentType.String)
     private String loginUrl;
 
-    @Property("Identifier of the IdP entity (URI)")
+    @Configuration.Setting(name ="Identifier of the IdP entity (URI)", contentType = ContentType.String, required = false)
     private String idpEntityId;
 
-    @Property("Identifier of the SP entity (URI)")
+    @Configuration.Setting(name ="Identifier of the SP entity (URI)", contentType = ContentType.String, required = false)
     private String spEntityId;
 
-    @Property("Assertion Consumer Service (URL)")
+    @Configuration.Setting(name ="Assertion Consumer Service (URL)", contentType = ContentType.String)
     private String assertionConsumer;
 
-    @Property("No XML Validation")
+    @Configuration.Setting(name ="No XML Validation", contentType = ContentType.Boolean, required = false)
     private boolean noXmlValidation;
 
-    @Property("Debug")
+    @Configuration.Setting(name ="Debug", contentType = ContentType.Boolean, required = false)
     private boolean debug;
 
-    @Property("Supported Users")
+    @Configuration.Setting(name ="Supported Users", contentType = ContentType.String, required = false)
     private String supportedUsers;
 
-    @Property("Supported Groups")
+    @Configuration.Setting(name ="Supported Groups", contentType = ContentType.String, required = false)
     private String supportedGroups;
 
     public String getCertificate() {

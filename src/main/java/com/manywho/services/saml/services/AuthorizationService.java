@@ -1,12 +1,11 @@
 package com.manywho.services.saml.services;
 
-import com.manywho.sdk.entities.UserObject;
-import com.manywho.sdk.entities.run.elements.config.Authorization;
-import com.manywho.sdk.entities.security.AuthenticatedWho;
-import com.manywho.sdk.enums.AuthenticationType;
-import com.manywho.sdk.enums.AuthorizationType;
+import com.manywho.sdk.api.AuthorizationType;
+import com.manywho.sdk.api.run.elements.config.Authorization;
+import com.manywho.sdk.api.security.AuthenticatedWho;
+import com.manywho.sdk.services.types.system.$User;
 import com.manywho.services.saml.managers.CacheManager;
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections.CollectionUtils;
 import javax.inject.Inject;
 import java.util.ArrayList;
 
@@ -21,12 +20,22 @@ public class AuthorizationService {
         this.jwtService = jwtService;
     }
 
-    public UserObject createUserObject(AuthenticatedWho authenticatedWho, String loginUrl, String status) {
-        return new UserObject("SAML", AuthorizationType.SAML, loginUrl, status, authenticatedWho.getUserId(),
-                authenticatedWho.getUsername(), authenticatedWho.getEmail(), authenticatedWho.getFirstName());
+    public $User createUserObject(AuthenticatedWho authenticatedWho, String loginUrl, String status) {
+        $User result = new $User();
+        result.setDirectoryId("SAML");
+        result.setDirectoryName("SAML");
+        result.setAuthenticationType(AuthorizationType.SAML);
+        result.setLoginUrl(loginUrl);
+        result.setStatus(status);
+        result.setUserId(authenticatedWho.getUserId());
+        result.setUsername(authenticatedWho.getUsername());
+        result.setEmail(authenticatedWho.getEmail());
+        result.setFirstName(authenticatedWho.getFirstName());
+
+        return result;
     }
 
-    public String getStatus(Authorization authorization,  AuthenticatedWho user) throws Exception {
+    public String getStatus(Authorization authorization, AuthenticatedWho user) throws Exception {
         switch (authorization.getGlobalAuthenticationType()) {
             case Public:
                 return "200";
@@ -74,7 +83,7 @@ public class AuthorizationService {
 
     public boolean shouldSendLoginUrl(Authorization authorization, AuthenticatedWho user, String status) {
         if (user.getUserId().equalsIgnoreCase("PUBLIC_USER") == false &&
-                authorization.getGlobalAuthenticationType() == AuthenticationType.Specified &&
+                authorization.getGlobalAuthenticationType() == Authorization.AuthenticationType.Specified &&
                 jwtService.isValid(user.getToken()) &&
                 status.equalsIgnoreCase("401")) {
             

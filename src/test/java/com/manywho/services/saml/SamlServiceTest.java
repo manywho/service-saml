@@ -1,23 +1,9 @@
 package com.manywho.services.saml;
 
-import com.manywho.sdk.enums.AuthenticationType;
-import com.manywho.sdk.entities.run.elements.config.Authorization;
-import com.manywho.sdk.entities.run.elements.config.Group;
-import com.manywho.sdk.entities.run.elements.config.GroupCollection;
-import com.manywho.sdk.entities.security.AuthenticatedWho;
-import com.manywho.services.saml.managers.CacheManager;
-import com.manywho.services.saml.services.AuthorizationService;
 import com.manywho.services.saml.services.JwtService;
 import org.junit.Assert;
 import org.junit.Test;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.any;
-
-
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 public class SamlServiceTest {
     @Test

@@ -1,7 +1,6 @@
 package com.manywho.services.saml.services;
 
-import com.manywho.sdk.entities.security.AuthenticatedWhoResult;
-import com.manywho.sdk.enums.AuthenticationStatus;
+import com.manywho.sdk.api.security.AuthenticatedWhoResult;
 import com.manywho.services.saml.entities.SamlResponseHandler;
 import com.manywho.services.saml.managers.CacheManager;
 import org.apache.commons.lang3.StringUtils;
@@ -54,7 +53,7 @@ public class AuthenticationService {
             result.setLastName(response.getFirstName());
         }
 
-        result.setStatus(AuthenticationStatus.Authenticated);
+        result.setStatus(AuthenticatedWhoResult.AuthenticationStatus.Authenticated);
         result.setTenantName("SAML");
         result.setToken(jwtToken);
         result.setUserId(response.getNameIdentifier());

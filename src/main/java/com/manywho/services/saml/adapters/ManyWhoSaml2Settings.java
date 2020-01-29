@@ -1,6 +1,6 @@
 package com.manywho.services.saml.adapters;
 
-import com.manywho.services.saml.entities.Configuration;
+import com.manywho.services.saml.entities.ApplicationConfiguration;
 import com.onelogin.saml2.settings.Saml2Settings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.xml.security.exceptions.Base64DecodingException;
@@ -19,7 +19,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 
 public class ManyWhoSaml2Settings extends Saml2Settings {
 
-    public ManyWhoSaml2Settings(Configuration configuration) {
+    public ManyWhoSaml2Settings(ApplicationConfiguration configuration) {
         super();
 
         this.setCompressRequest(false);

@@ -1,8 +1,8 @@
 package com.manywho.services.saml.security;
 
-import com.manywho.sdk.services.config.ServiceConfigurationDefault;
-import com.manywho.sdk.services.config.ServiceConfigurationEnvironmentVariables;
-import com.manywho.sdk.services.config.ServiceConfigurationProperties;
+import com.manywho.services.saml.configuration.ServiceConfigurationDefault;
+import com.manywho.services.saml.configuration.ServiceConfigurationEnvironmentVariables;
+import com.manywho.services.saml.configuration.ServiceConfigurationProperties;
 
 import javax.inject.Inject;
 

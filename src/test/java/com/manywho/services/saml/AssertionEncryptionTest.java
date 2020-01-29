@@ -1,11 +1,12 @@
 package com.manywho.services.saml;
-import com.manywho.services.saml.entities.Configuration;
+import com.manywho.services.saml.entities.ApplicationConfiguration;
 import com.manywho.services.saml.entities.SamlResponseHandler;
 import com.manywho.services.saml.services.SamlService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.apache.commons.io.IOUtils;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 
@@ -27,7 +28,7 @@ public class AssertionEncryptionTest {
         String issuer = "https://capriza.github.io/samling/samling.html";
 
         SamlService samlService = new SamlService();
-        Configuration configuration = mock(Configuration.class);
+        ApplicationConfiguration configuration = mock(ApplicationConfiguration.class);
 
         when(configuration.getCertificate())
                 .thenReturn(publicCertificate);
@@ -53,7 +54,7 @@ public class AssertionEncryptionTest {
     }
 
     private String getFileContent(String path) throws IOException {
-        return IOUtils.toString(getClass().getClassLoader().getResourceAsStream(path));
+        return IOUtils.toString(getClass().getClassLoader().getResourceAsStream(path), StandardCharsets.UTF_8);
     }
 
     private String base64String(byte[] bytes) {

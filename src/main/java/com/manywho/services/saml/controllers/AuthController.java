@@ -1,122 +1,100 @@
 package com.manywho.services.saml.controllers;
 
-import com.manywho.sdk.entities.ConfigurationValuesAware;
-import com.manywho.sdk.entities.run.elements.type.*;
-import com.manywho.sdk.entities.run.elements.type.Object;
-import com.manywho.sdk.entities.security.AuthenticatedWhoResult;
-import com.manywho.sdk.entities.security.AuthenticationCredentials;
-import com.manywho.sdk.services.controllers.AbstractController;
-import com.manywho.services.saml.entities.Configuration;
+import com.google.inject.Provider;
+import com.manywho.sdk.api.run.elements.type.ObjectDataRequest;
+import com.manywho.sdk.api.run.elements.type.ObjectDataResponse;
+import com.manywho.sdk.api.security.AuthenticatedWho;
+import com.manywho.sdk.api.security.AuthenticatedWhoResult;
+import com.manywho.sdk.api.security.AuthenticationCredentials;
+import com.manywho.sdk.services.configuration.ConfigurationParser;
+import com.manywho.sdk.services.controllers.AbstractAuthenticationController;
+import com.manywho.sdk.services.types.TypeBuilder;
+import com.manywho.sdk.services.types.system.AuthorizationAttribute;
+import com.manywho.sdk.services.types.system.AuthorizationGroup;
+import com.manywho.sdk.services.types.system.AuthorizationUser;
+import com.manywho.services.saml.entities.ApplicationConfiguration;
 import com.manywho.services.saml.entities.UserAllowed;
 import com.manywho.services.saml.managers.AuthManager;
 import com.manywho.services.saml.utils.RestrictionsUtils;
-
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import java.util.ArrayList;
+import java.util.List;
 
 @Path("/")
 @Consumes("application/json")
 @Produces("application/json")
-public class AuthController extends AbstractController {
+public class AuthController extends AbstractAuthenticationController {
     private final AuthManager authManager;
+    private final TypeBuilder typeBuilder;
+    private final ConfigurationParser configurationParser;
+    private final Provider<AuthenticatedWho> authenticatedWhoProvider;
 
     @Inject
-    public AuthController(AuthManager authManager) {
+    public AuthController(AuthManager authManager, TypeBuilder typeBuilder, ConfigurationParser configurationParser, Provider<AuthenticatedWho> authenticatedWhoProvider) {
         this.authManager = authManager;
+        this.typeBuilder = typeBuilder;
+        this.configurationParser = configurationParser;
+        this.authenticatedWhoProvider = authenticatedWhoProvider;
     }
 
     @Path("/authentication")
     @POST
     public AuthenticatedWhoResult authentication(AuthenticationCredentials authenticationCredentials) throws Exception {
-        return authManager.authentication(getConfigurationValues(authenticationCredentials), authenticationCredentials);
+        return authManager.authentication(configurationParser.from(authenticationCredentials), authenticationCredentials);
     }
 
     @Path("/authorization")
     @POST
     public ObjectDataResponse authorization(ObjectDataRequest objectDataRequest) throws Exception {
-        return authManager.authorization(getConfigurationValues(objectDataRequest), objectDataRequest, getAuthenticatedWho());
+        AuthenticatedWho authenticatedWho = authenticatedWhoProvider.get();
+        return authManager.authorization(configurationParser.from(objectDataRequest), objectDataRequest, authenticatedWho);
     }
 
     @Path("/authorization/group")
     @POST
     public ObjectDataResponse groups(ObjectDataRequest objectDataRequest) throws Exception {
-        Configuration configuration = getConfigurationValues(objectDataRequest);
-        ObjectCollection objectCollection = new ObjectCollection();
+        ApplicationConfiguration configuration = configurationParser.from(objectDataRequest);
+        List<AuthorizationGroup> groups = new ArrayList<>();
 
         for (String name : RestrictionsUtils.listOfGroups(configuration.getSupportedGroups())) {
-            Object object = authorizationRestriction("GroupAuthorizationGroup",name, name);
-            objectCollection.add(object);
+            AuthorizationGroup group = new AuthorizationGroup(name, name, name);
+            groups.add(group);
         }
 
-        return new ObjectDataResponse(objectCollection);
+        return new ObjectDataResponse(typeBuilder.from(groups));
     }
 
     @Path("/authorization/group/attribute")
     @POST
     public ObjectDataResponse groupAttributes(ObjectDataRequest objectDataRequest) throws Exception {
-        ObjectCollection objectCollection = new ObjectCollection();
-        PropertyCollection properties = new PropertyCollection();
-        properties.add(new Property("Label", "Members"));
-        properties.add(new Property("Value", "MEMBERS"));
-
-        Object object = new Object();
-        object.setDeveloperName("AuthenticationAttribute");
-        object.setExternalId("MEMBERS");
-        object.setProperties(properties);
-        objectCollection.add(object);
-
-        return new ObjectDataResponse(objectCollection);
+        return new ObjectDataResponse(
+                typeBuilder.from(new AuthorizationAttribute("MEMBERS", "Members"))
+        );
     }
 
     @Path("/authorization/user")
     @POST
     public ObjectDataResponse users(ObjectDataRequest objectDataRequest) throws Exception {
-        Configuration configuration = getConfigurationValues(objectDataRequest);
-        ObjectCollection objectCollection = new ObjectCollection();
+        ApplicationConfiguration configuration = configurationParser.from(objectDataRequest);
+        List<AuthorizationUser> users = new ArrayList<>();
 
         for (UserAllowed userRestriction : RestrictionsUtils.listOfUsers(configuration.getSupportedUsers())) {
-            Object object = authorizationRestriction("GroupAuthorizationUser", userRestriction.getId(), userRestriction.getFriendlyName());
-            objectCollection.add(object);
+            AuthorizationUser user = new AuthorizationUser(userRestriction.getId(), userRestriction.getFriendlyName());
+            users.add(user);
         }
 
-        return new ObjectDataResponse(objectCollection);
+        return new ObjectDataResponse(typeBuilder.from(users));
     }
 
     @Path("/authorization/user/attribute")
     @POST
     public ObjectDataResponse userAttributes(ObjectDataRequest objectDataRequest) throws Exception {
-        ObjectCollection objectCollection = new ObjectCollection();
-
-        PropertyCollection properties = new PropertyCollection();
-        properties.add(new Property("Label", "Account ID"));
-        properties.add(new Property("Value", "accountId"));
-
-        Object object = new Object();
-        object.setDeveloperName("AuthenticationAttribute");
-        object.setExternalId("accountID");
-        object.setProperties(properties);
-        objectCollection.add(object);
-
-        return new ObjectDataResponse(objectCollection);
-    }
-
-    private Object authorizationRestriction(String developerName, String name, String friendlyName) {
-        Object object = new Object();
-        object.setDeveloperName(developerName);
-        object.setExternalId(name);
-
-        PropertyCollection properties = new PropertyCollection();
-        properties.add(new Property("AuthenticationId", name));
-        properties.add(new Property("FriendlyName", friendlyName));
-        properties.add(new Property("DeveloperSummary", friendlyName));
-        object.setProperties(properties);
-        return object;
-    }
-
-    private Configuration getConfigurationValues(ConfigurationValuesAware configurationValuesAware) throws Exception {
-        return parseConfigurationValues(configurationValuesAware, Configuration.class);
+        return new ObjectDataResponse(
+                typeBuilder.from(new AuthorizationAttribute("accountId", "Account ID"))
+        );
     }
 }
