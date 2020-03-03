@@ -47,6 +47,7 @@ public class AuthenticationService {
         result.setEmail(response.getEmailAddress());
         result.setFirstName(response.getFirstName());
         result.setIdentityProvider("SAML");
+        result.setPrimaryGroupName(String.join(",", response.getGroups()));
 
         if (!StringUtils.isEmpty(response.getLastName())) {
             result.setLastName(response.getLastName());
