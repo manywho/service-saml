@@ -83,6 +83,16 @@ public class SamlResponseHandler {
         return arrayList;
     }
 
+    public String getIssuer() {
+
+        try {
+            return response.getIssuers().get(0);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error reading the Issuer information", e);
+        }
+    }
+
     public boolean isValid() {
         return response.isValid();
     }

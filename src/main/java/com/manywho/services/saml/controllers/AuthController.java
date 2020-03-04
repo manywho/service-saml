@@ -3,9 +3,7 @@ package com.manywho.services.saml.controllers;
 import com.google.inject.Provider;
 import com.manywho.sdk.api.run.elements.type.ObjectDataRequest;
 import com.manywho.sdk.api.run.elements.type.ObjectDataResponse;
-import com.manywho.sdk.api.security.AuthenticatedWho;
-import com.manywho.sdk.api.security.AuthenticatedWhoResult;
-import com.manywho.sdk.api.security.AuthenticationCredentials;
+import com.manywho.sdk.api.security.*;
 import com.manywho.sdk.services.configuration.ConfigurationParser;
 import com.manywho.sdk.services.controllers.AbstractAuthenticationController;
 import com.manywho.sdk.services.types.TypeBuilder;
@@ -45,6 +43,12 @@ public class AuthController extends AbstractAuthenticationController {
     @POST
     public AuthenticatedWhoResult authentication(AuthenticationCredentials authenticationCredentials) throws Exception {
         return authManager.authentication(configurationParser.from(authenticationCredentials), authenticationCredentials);
+    }
+
+    @Path("/logout")
+    @POST
+    public LogoutResponse logout(LogoutRequest logoutRequest) throws Exception {
+        return authManager.logout(configurationParser.from(logoutRequest), logoutRequest);
     }
 
     @Path("/authorization")

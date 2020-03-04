@@ -2,6 +2,7 @@ package com.manywho.services.saml.services;
 
 import com.manywho.services.saml.adapters.ManyWhoSaml2Settings;
 import com.manywho.services.saml.entities.ApplicationConfiguration;
+import com.manywho.services.saml.entities.SamlLogoutRequestHandler;
 import com.manywho.services.saml.entities.SamlResponseHandler;
 import com.manywho.services.saml.utils.SamlRequestGenerator;
 import com.onelogin.saml2.authn.*;
@@ -28,5 +29,13 @@ public class SamlService {
         AuthnRequest authReq = new AuthnRequest(appSettings, false, false, false);
 
         return SamlRequestGenerator.generateLoginRequest(configuration.getLoginUrl(), authReq.getEncodedAuthnRequest());
+    }
+
+    public SamlLogoutRequestHandler decryptLogoutRequest(ApplicationConfiguration configuration, String samlLogoutRequest, String logoutUrl) {
+        try {
+            return new SamlLogoutRequestHandler(configuration, samlLogoutRequest, logoutUrl);
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to decrypt the SAML logout request: " + e.getMessage(), e);
+        }
     }
 }

@@ -1,6 +1,8 @@
 package com.manywho.services.saml.services;
 
 import com.manywho.sdk.api.security.AuthenticatedWhoResult;
+import com.manywho.sdk.api.security.LogoutResponse;
+import com.manywho.services.saml.entities.SamlLogoutRequestHandler;
 import com.manywho.services.saml.entities.SamlResponseHandler;
 import com.manywho.services.saml.managers.CacheManager;
 import org.apache.commons.lang3.StringUtils;
@@ -45,7 +47,7 @@ public class AuthenticationService {
         result.setDirectoryName("SAML");
         result.setEmail(response.getEmailAddress());
         result.setFirstName(response.getFirstName());
-        result.setIdentityProvider("SAML");
+        result.setIdentityProvider(response.getIssuer());
 
         if (!StringUtils.isEmpty(response.getLastName())) {
             result.setLastName(response.getLastName());
@@ -66,5 +68,46 @@ public class AuthenticationService {
         }
 
         return result;
+    }
+
+    public LogoutResponse createLogoutResponse(SamlLogoutRequestHandler request) {
+
+        LogoutResponse response = new LogoutResponse();
+
+        if(request.isValid() == false) {
+
+            response.setStatus("INVALID_REQUEST"); //todo: not a real status
+            response.setErrorMessage(request.getError());
+            //response.setCode(); //todo:
+
+        } else {
+
+            response.setStatus("OK");
+            response.setUserId(request.getUserId());
+
+            String encodedLogoutResponse = generateSamlLogoutResponse(request);
+            response.setCode(encodedLogoutResponse);
+         }
+
+        return response;
+    }
+
+    private String generateSamlLogoutResponse(SamlLogoutRequestHandler request) {
+
+        try {
+
+            //todo: maybe naming my class LogoutResponse wasn't such a great idea after all...
+            com.onelogin.saml2.logout.LogoutResponse samlLogoutResponse = new com.onelogin.saml2.logout.LogoutResponse(request.getSaml2Settings(), null);
+            samlLogoutResponse.build();
+
+            if (samlLogoutResponse.isValid() == false) {
+                throw new RuntimeException("Created logout response is not valid: " + samlLogoutResponse.getError());
+            }
+
+            return samlLogoutResponse.getEncodedLogoutResponse();
+
+        } catch (Throwable t) {
+            throw new RuntimeException("Error creating SAML logout response: " + t.getMessage(), t);
+        }
     }
 }

@@ -2,12 +2,11 @@ package com.manywho.services.saml.managers;
 
 import com.manywho.sdk.api.run.elements.type.ObjectDataRequest;
 import com.manywho.sdk.api.run.elements.type.ObjectDataResponse;
-import com.manywho.sdk.api.security.AuthenticatedWho;
-import com.manywho.sdk.api.security.AuthenticatedWhoResult;
-import com.manywho.sdk.api.security.AuthenticationCredentials;
+import com.manywho.sdk.api.security.*;
 import com.manywho.sdk.services.types.TypeBuilder;
 import com.manywho.sdk.services.types.system.$User;
 import com.manywho.services.saml.entities.ApplicationConfiguration;
+import com.manywho.services.saml.entities.SamlLogoutRequestHandler;
 import com.manywho.services.saml.entities.SamlResponseHandler;
 import com.manywho.services.saml.services.AuthenticationService;
 import com.manywho.services.saml.services.AuthorizationService;
@@ -41,6 +40,13 @@ public class AuthManager {
         SamlResponseHandler response = samlService.decryptResponse(configuration, authenticationCredentials.getCode(), authenticationCredentials.getRedirectUri());
 
         return authenticationService.createAuthenticatedWhoResult(response);
+    }
+
+    public LogoutResponse logout(ApplicationConfiguration configuration, LogoutRequest logoutRequest) {
+
+        SamlLogoutRequestHandler handler = samlService.decryptLogoutRequest(configuration, logoutRequest.getCode(), logoutRequest.getLogoutUrl());
+
+        return authenticationService.createLogoutResponse(handler);
     }
 
     /**
