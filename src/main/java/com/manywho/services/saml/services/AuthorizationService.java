@@ -5,7 +5,7 @@ import com.manywho.sdk.api.run.elements.config.Authorization;
 import com.manywho.sdk.api.security.AuthenticatedWho;
 import com.manywho.sdk.services.types.system.$User;
 import com.manywho.services.saml.managers.CacheManager;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import javax.inject.Inject;
 import java.util.ArrayList;
 
