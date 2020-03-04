@@ -3,11 +3,8 @@ package com.manywho.services.saml.entities;
 import com.manywho.sdk.api.ContentType;
 import com.manywho.sdk.services.configuration.Configuration;
 import com.manywho.services.saml.validators.Certificate;
-import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.URL;
 
 public class ApplicationConfiguration  implements Configuration {
-    @NotBlank(message = "A certificate must be provided")
     @Certificate
     @Configuration.Setting(name ="Certificate", contentType = ContentType.Encrypted)
     private String certificate;
@@ -15,8 +12,6 @@ public class ApplicationConfiguration  implements Configuration {
     @Configuration.Setting(name ="SP Private Key", contentType = ContentType.Encrypted, required = false)
     private String privateKey;
 
-    @NotBlank(message = "A valid login URL must be provided")
-    @URL(message = "A valid login URL must be provided")
     @Configuration.Setting(name ="Login URL", contentType = ContentType.String)
     private String loginUrl;
 
