@@ -9,11 +9,19 @@ import com.google.inject.util.Modules;
 import com.manywho.sdk.api.jackson.ObjectMapperFactory;
 import com.manywho.sdk.client.run.RunClient;
 import com.manywho.sdk.services.ServiceApplicationModule;
+import com.manywho.sdk.services.actions.ActionHandler;
+import com.manywho.sdk.services.actions.ActionProvider;
+import com.manywho.sdk.services.actions.DummyActionHandler;
+import com.manywho.sdk.services.actions.DummyActionProvider;
+import com.manywho.sdk.services.configuration.ApplicationConfiguration;
 import com.manywho.sdk.services.controllers.DefaultActionController;
 import com.manywho.sdk.services.controllers.DefaultDescribeController;
 import com.manywho.sdk.services.controllers.DefaultFileController;
 import com.manywho.sdk.services.identity.AuthorizationEncoder;
 import com.manywho.sdk.services.providers.AuthenticatedWhoProvider;
+import com.manywho.sdk.services.providers.ReflectionsProvider;
+import com.manywho.sdk.services.types.DummyTypeProvider;
+import com.manywho.sdk.services.types.TypeProvider;
 import com.manywho.services.saml.ApplicationBinder;
 import com.manywho.services.saml.security.SecurityConfiguration;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -49,6 +57,8 @@ public class SamlServiceFunctionalTest {
     private AuthenticatedWhoProvider authenticatedWhoProvider;
     private SecurityConfiguration securityConfiguration;
 
+    private static final String JAVA_PACKAGE_NAME = "com.manywho.services.saml";
+
     @Before
     public void setUp() {
         jedisPool = Mockito.mock(JedisPool.class);
@@ -63,7 +73,7 @@ public class SamlServiceFunctionalTest {
 
         final List<Module> modules = Lists.newArrayList();
 
-        modules.add(new ServiceApplicationModule("com.manywho.services.saml", true));
+        modules.add(new ServiceApplicationModule());
         modules.add(new ApplicationBinder());
 
         this.injector = Guice.createInjector(
@@ -83,11 +93,9 @@ public class SamlServiceFunctionalTest {
     }
 
     private void addInstances(Dispatcher dispatcher, Set<Class<?>> classes) {
-        String servicePackage = "com.manywho.services.saml";
-
         // Only create instances of classes that are in the service or in the SDK
         classes.stream()
-                .filter(c -> c.getPackage().getName().startsWith(servicePackage) || c.getPackage().getName().startsWith("com.manywho.sdk.services"))
+                .filter(c -> c.getPackage().getName().startsWith(JAVA_PACKAGE_NAME) || c.getPackage().getName().startsWith("com.manywho.sdk.services"))
                 .forEach(c -> dispatcher.getProviderFactory().register(injector.getInstance(c)));
     }
 
@@ -113,6 +121,11 @@ public class SamlServiceFunctionalTest {
                 bind(SecurityConfiguration.class).toProvider(() -> securityConfiguration);
                 bind(AuthenticatedWhoProvider.class).toProvider(() -> authenticatedWhoProvider);
                 bind(HttpHeaders.class).toProvider(() -> httpHeadersTest);
+                bind(ActionHandler.class).to(DummyActionHandler.class);
+                bind(ActionProvider.class).to(DummyActionProvider.class);
+                bind(TypeProvider.class).to(DummyTypeProvider.class);
+                bind(Reflections.class).toProvider(ReflectionsProvider.class).asEagerSingleton();
+                bind(ApplicationConfiguration.class).toInstance(new ApplicationConfiguration(JAVA_PACKAGE_NAME));
 
                 bindScope(RequestScoped.class, new Scope() {
                     @Override
