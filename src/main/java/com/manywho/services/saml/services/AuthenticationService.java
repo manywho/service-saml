@@ -1,7 +1,6 @@
 package com.manywho.services.saml.services;
 
 import com.manywho.sdk.api.security.AuthenticatedWhoResult;
-import com.manywho.services.saml.actions.Group;
 import com.manywho.services.saml.entities.ApplicationConfiguration;
 import com.manywho.services.saml.entities.SamlResponseHandler;
 import com.manywho.services.saml.managers.CacheManager;
@@ -9,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.List;
 
 public class AuthenticationService {
     private final JwtService jwtService;
