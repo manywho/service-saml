@@ -5,8 +5,12 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.manywho.services.saml.actions.Group;
+
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JwtService {
     private Algorithm algorithm;
@@ -21,7 +25,7 @@ public class JwtService {
                 .build();
     }
 
-    public String sign(String identifier, LocalDateTime notBefore, LocalDateTime notAfter) {
+    public String sign(String identifier, LocalDateTime notBefore, LocalDateTime notAfter, List<String> groups) {
         long notAfterSeconds = LocalDateTime.now().plusMinutes(14).toEpochSecond(ZoneOffset.UTC);
         long notBeforeSeconds = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
@@ -39,7 +43,21 @@ public class JwtService {
                 .withClaim("iat", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
                 .withClaim("exp", notAfterSeconds)
                 .withClaim("nbf", notBeforeSeconds)
+                .withArrayClaim("groups", groups.toArray(new String[0]))
                 .sign(algorithm);
+    }
+
+    static public List<Group> getGroups(String token) {
+        DecodedJWT tokenDecoded = JWT.decode(token);
+        List<Group> groups  = new ArrayList<>();
+
+        if (tokenDecoded.getClaim("groups").isNull() == false) {
+            for (String group: tokenDecoded.getClaim("groups").asList(String.class)) {
+                groups.add(new Group(group));
+            }
+        }
+
+        return groups;
     }
 
     public boolean isValid(String token) {
