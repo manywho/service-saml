@@ -40,7 +40,7 @@ public class AuthManager {
     public AuthenticatedWhoResult authentication(ApplicationConfiguration configuration, AuthenticationCredentials authenticationCredentials) throws Exception {
         SamlResponseHandler response = samlService.decryptResponse(configuration, authenticationCredentials.getCode(), authenticationCredentials.getRedirectUri());
 
-        return authenticationService.createAuthenticatedWhoResult(response);
+        return authenticationService.createAuthenticatedWhoResult(configuration, response);
     }
 
     /**

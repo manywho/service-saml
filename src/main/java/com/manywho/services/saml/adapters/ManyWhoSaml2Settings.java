@@ -22,8 +22,11 @@ public class ManyWhoSaml2Settings extends Saml2Settings {
     public ManyWhoSaml2Settings(ApplicationConfiguration configuration) {
         super();
 
-        this.setCompressRequest(false);
-
+        if (configuration.getCompressRequest()) {
+            this.setCompressRequest(true);
+        } else {
+            this.setCompressRequest(false);
+        }
         try {
             this.setIdpSingleSignOnServiceUrl(new URL(configuration.getLoginUrl()));
         } catch (MalformedURLException e) {
