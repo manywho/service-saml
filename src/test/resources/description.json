@@ -1,4 +1,116 @@
 {
+  "culture": null,
+  "uri": null,
+  "configurationValues": [
+    {
+      "developerName": "Certificate",
+      "contentValue": null,
+      "contentType": "ContentEncrypted",
+      "typeElementDeveloperName": null,
+      "ordinal": 0,
+      "required": true
+    },
+    {
+      "developerName": "SP Private Key",
+      "contentValue": null,
+      "contentType": "ContentEncrypted",
+      "typeElementDeveloperName": null,
+      "ordinal": 0,
+      "required": false
+    },
+    {
+      "developerName": "Login URL",
+      "contentValue": null,
+      "contentType": "ContentString",
+      "typeElementDeveloperName": null,
+      "ordinal": 0,
+      "required": true
+    },
+    {
+      "developerName": "Assertion Consumer Service (URL)",
+      "contentValue": null,
+      "contentType": "ContentString",
+      "typeElementDeveloperName": null,
+      "ordinal": 0,
+      "required": true
+    },
+    {
+      "developerName": "Identifier of the IdP entity (URI)",
+      "contentValue": null,
+      "contentType": "ContentString",
+      "typeElementDeveloperName": null,
+      "ordinal": 0,
+      "required": false
+    },
+    {
+      "developerName": "Identifier of the SP entity (URI)",
+      "contentValue": null,
+      "contentType": "ContentString",
+      "typeElementDeveloperName": null,
+      "ordinal": 0,
+      "required": false
+    },
+    {
+      "developerName": "No XML Validation",
+      "contentValue": null,
+      "contentType": "ContentBoolean",
+      "typeElementDeveloperName": null,
+      "ordinal": 0,
+      "required": false
+    },
+    {
+      "developerName": "Debug",
+      "contentValue": null,
+      "contentType": "ContentBoolean",
+      "typeElementDeveloperName": null,
+      "ordinal": 0,
+      "required": false
+    },
+    {
+      "developerName": "Supported Users",
+      "contentValue": null,
+      "contentType": "ContentString",
+      "typeElementDeveloperName": null,
+      "ordinal": 0,
+      "required": false
+    },
+    {
+      "developerName": "Supported Groups",
+      "contentValue": null,
+      "contentType": "ContentString",
+      "typeElementDeveloperName": null,
+      "ordinal": 0,
+      "required": false
+    },
+    {
+      "contentType": "ContentBoolean",
+      "contentValue": null,
+      "developerName": "Support Groups In Runtime",
+      "ordinal": 0,
+      "required": false,
+      "typeElementDeveloperName": null
+    },
+    {
+      "contentType": "ContentBoolean",
+      "contentValue": null,
+      "developerName": "Compress Request",
+      "ordinal": 0,
+      "required": false,
+      "typeElementDeveloperName": null
+    }
+  ],
+  "providesAutoBinding": false,
+  "providesDatabase": false,
+  "providesFiles": false,
+  "providesIdentity": true,
+  "providesListening": false,
+  "providesLogic": true,
+  "providesNotifications": false,
+  "providesSmartSave": false,
+  "providesSocial": false,
+  "providesSharing": false,
+  "providesViews": false,
+  "providesVoting": false,
   "actions": [
     {
       "developerName": "Get Groups",
@@ -23,105 +135,6 @@
       "uriPart": "actions/get-groups"
     }
   ],
-  "configurationValues": [
-    {
-      "contentType": "ContentString",
-      "contentValue": null,
-      "developerName": "Assertion Consumer Service (URL)",
-      "ordinal": 0,
-      "required": true,
-      "typeElementDeveloperName": null
-    },
-    {
-      "contentType": "ContentEncrypted",
-      "contentValue": null,
-      "developerName": "Certificate",
-      "ordinal": 0,
-      "required": true,
-      "typeElementDeveloperName": null
-    },
-    {
-      "contentType": "ContentBoolean",
-      "contentValue": null,
-      "developerName": "Debug",
-      "ordinal": 0,
-      "required": false,
-      "typeElementDeveloperName": null
-    },
-    {
-      "contentType": "ContentString",
-      "contentValue": null,
-      "developerName": "Identifier of the IdP entity (URI)",
-      "ordinal": 0,
-      "required": false,
-      "typeElementDeveloperName": null
-    },
-    {
-      "contentType": "ContentString",
-      "contentValue": null,
-      "developerName": "Identifier of the SP entity (URI)",
-      "ordinal": 0,
-      "required": false,
-      "typeElementDeveloperName": null
-    },
-    {
-      "contentType": "ContentString",
-      "contentValue": null,
-      "developerName": "Login URL",
-      "ordinal": 0,
-      "required": true,
-      "typeElementDeveloperName": null
-    },
-    {
-      "contentType": "ContentBoolean",
-      "contentValue": null,
-      "developerName": "No XML Validation",
-      "ordinal": 0,
-      "required": false,
-      "typeElementDeveloperName": null
-    },
-    {
-      "contentType": "ContentEncrypted",
-      "contentValue": null,
-      "developerName": "SP Private Key",
-      "ordinal": 0,
-      "required": false,
-      "typeElementDeveloperName": null
-    },
-    {
-      "contentType": "ContentString",
-      "contentValue": null,
-      "developerName": "Supported Groups",
-      "ordinal": 0,
-      "required": false,
-      "typeElementDeveloperName": null
-    },
-    {
-      "contentType": "ContentString",
-      "contentValue": null,
-      "developerName": "Supported Users",
-      "ordinal": 0,
-      "required": false,
-      "typeElementDeveloperName": null
-    },
-    {
-      "contentType": "ContentBoolean",
-      "contentValue": null,
-      "developerName": "Support Groups In Runtime",
-      "ordinal": 0,
-      "required": false,
-      "typeElementDeveloperName": null
-    },
-    {
-      "contentType": "ContentBoolean",
-      "contentValue": null,
-      "developerName": "Compress Request",
-      "ordinal": 0,
-      "required": false,
-      "typeElementDeveloperName": null
-    }
-  ],
-  "culture": null,
   "install": {
     "typeElements": [
       {
@@ -146,18 +159,5 @@
         "updateByName": false
       }
     ]
-  },
-  "providesAutoBinding": false,
-  "providesDatabase": false,
-  "providesFiles": false,
-  "providesIdentity": true,
-  "providesListening": false,
-  "providesLogic": true,
-  "providesNotifications": false,
-  "providesSharing": false,
-  "providesSmartSave": false,
-  "providesSocial": false,
-  "providesViews": false,
-  "providesVoting": false,
-  "uri": null
+  }
 }
