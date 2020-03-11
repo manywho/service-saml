@@ -1,12 +1,13 @@
 package com.manywho.services.saml.managers;
 
-import com.manywho.sdk.entities.UserObject;
-import com.manywho.sdk.entities.run.elements.type.ObjectDataRequest;
-import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
-import com.manywho.sdk.entities.security.AuthenticatedWho;
-import com.manywho.sdk.entities.security.AuthenticatedWhoResult;
-import com.manywho.sdk.entities.security.AuthenticationCredentials;
-import com.manywho.services.saml.entities.Configuration;
+import com.manywho.sdk.api.run.elements.type.ObjectDataRequest;
+import com.manywho.sdk.api.run.elements.type.ObjectDataResponse;
+import com.manywho.sdk.api.security.AuthenticatedWho;
+import com.manywho.sdk.api.security.AuthenticatedWhoResult;
+import com.manywho.sdk.api.security.AuthenticationCredentials;
+import com.manywho.sdk.services.types.TypeBuilder;
+import com.manywho.sdk.services.types.system.$User;
+import com.manywho.services.saml.entities.ApplicationConfiguration;
 import com.manywho.services.saml.entities.SamlResponseHandler;
 import com.manywho.services.saml.services.AuthenticationService;
 import com.manywho.services.saml.services.AuthorizationService;
@@ -18,12 +19,14 @@ public class AuthManager {
     private final SamlService samlService;
     private final AuthenticationService authenticationService;
     private final AuthorizationService authorizationService;
+    private final TypeBuilder typeBuilder;
 
     @Inject
-    public AuthManager(SamlService samlService, AuthenticationService authenticationService, AuthorizationService authorizationService) {
+    public AuthManager(SamlService samlService, AuthenticationService authenticationService, AuthorizationService authorizationService, TypeBuilder typeBuilder) {
         this.samlService = samlService;
         this.authenticationService = authenticationService;
         this.authorizationService = authorizationService;
+        this.typeBuilder = typeBuilder;
     }
 
     /**
@@ -34,10 +37,10 @@ public class AuthManager {
      * @param authenticationCredentials The credentials to decrypt
      * @return information about the authenticated user
      */
-    public AuthenticatedWhoResult authentication(Configuration configuration, AuthenticationCredentials authenticationCredentials) throws Exception {
+    public AuthenticatedWhoResult authentication(ApplicationConfiguration configuration, AuthenticationCredentials authenticationCredentials) throws Exception {
         SamlResponseHandler response = samlService.decryptResponse(configuration, authenticationCredentials.getCode(), authenticationCredentials.getRedirectUri());
 
-        return authenticationService.createAuthenticatedWhoResult(response);
+        return authenticationService.createAuthenticatedWhoResult(configuration, response);
     }
 
     /**
@@ -48,7 +51,7 @@ public class AuthManager {
      * @param authenticatedWho    The currently authenticated user
      * @return a UserObject that says whether the authenticated user is authorized
      */
-    public ObjectDataResponse authorization(Configuration configuration, ObjectDataRequest objectDataRequest, AuthenticatedWho authenticatedWho) throws Exception {
+    public ObjectDataResponse authorization(ApplicationConfiguration configuration, ObjectDataRequest objectDataRequest, AuthenticatedWho authenticatedWho) throws Exception {
         String status = authorizationService.getStatus(objectDataRequest.getAuthorization(), authenticatedWho);
         String loginUrl = "";
 
@@ -56,8 +59,8 @@ public class AuthManager {
             loginUrl = samlService.generateSamlLoginUrl(configuration);
         }
 
-        UserObject user = authorizationService.createUserObject(authenticatedWho, loginUrl, status);
+        $User user = authorizationService.createUserObject(authenticatedWho, loginUrl, status);
 
-        return new ObjectDataResponse(user);
+        return new ObjectDataResponse(typeBuilder.from(user));
     }
 }

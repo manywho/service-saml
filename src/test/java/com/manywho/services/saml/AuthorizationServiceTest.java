@@ -1,8 +1,9 @@
 package com.manywho.services.saml;
 
-import com.manywho.sdk.entities.run.elements.config.*;
-import com.manywho.sdk.entities.security.AuthenticatedWho;
-import com.manywho.sdk.enums.AuthenticationType;
+import com.manywho.sdk.api.run.elements.config.Authorization;
+import com.manywho.sdk.api.run.elements.config.Group;
+import com.manywho.sdk.api.run.elements.config.User;
+import com.manywho.sdk.api.security.AuthenticatedWho;
 import com.manywho.services.saml.managers.CacheManager;
 import com.manywho.services.saml.services.AuthorizationService;
 import com.manywho.services.saml.services.JwtService;
@@ -10,6 +11,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -25,7 +27,7 @@ public class AuthorizationServiceTest {
         Authorization authorization = new Authorization();
         AuthenticatedWho authenticatedWho = new AuthenticatedWho();
 
-        authorization.setGlobalAuthenticationType(AuthenticationType.Public);
+        authorization.setGlobalAuthenticationType(Authorization.AuthenticationType.Public);
         String actualStatus = authorizationService.getStatus(authorization, authenticatedWho);
         Assert.assertEquals("200", actualStatus);
     }
@@ -40,7 +42,7 @@ public class AuthorizationServiceTest {
         AuthenticatedWho authenticatedWho = new AuthenticatedWho();
         authenticatedWho.setUserId("PUBLIC_USER");
 
-        authorization.setGlobalAuthenticationType(AuthenticationType.AllUsers);
+        authorization.setGlobalAuthenticationType(Authorization.AuthenticationType.AllUsers);
         String actualStatus = authorizationService.getStatus(authorization, authenticatedWho);
         Assert.assertEquals("401", actualStatus);
     }
@@ -57,7 +59,7 @@ public class AuthorizationServiceTest {
         AuthenticatedWho authenticatedWho = new AuthenticatedWho();
         authenticatedWho.setUserId("123456");
 
-        authorization.setGlobalAuthenticationType(AuthenticationType.AllUsers);
+        authorization.setGlobalAuthenticationType(Authorization.AuthenticationType.AllUsers);
         String actualStatus = authorizationService.getStatus(authorization, authenticatedWho);
         Assert.assertEquals("200", actualStatus);
     }
@@ -76,7 +78,7 @@ public class AuthorizationServiceTest {
         AuthenticatedWho authenticatedWho = new AuthenticatedWho();
         authenticatedWho.setUserId("123456");
 
-        authorization.setGlobalAuthenticationType(AuthenticationType.AllUsers);
+        authorization.setGlobalAuthenticationType(Authorization.AuthenticationType.AllUsers);
         String actualStatus = authorizationService.getStatus(authorization, authenticatedWho);
         Assert.assertEquals("401", actualStatus);
     }
@@ -94,7 +96,7 @@ public class AuthorizationServiceTest {
         AuthenticatedWho authenticatedWho = new AuthenticatedWho();
         authenticatedWho.setUserId("123456");
 
-        authorization.setGlobalAuthenticationType(AuthenticationType.Specified);
+        authorization.setGlobalAuthenticationType(Authorization.AuthenticationType.Specified);
         String actualStatus = authorizationService.getStatus(authorization, authenticatedWho);
         Assert.assertEquals("401", actualStatus);
     }
@@ -112,7 +114,7 @@ public class AuthorizationServiceTest {
         AuthenticatedWho authenticatedWho = new AuthenticatedWho();
         authenticatedWho.setUserId("123456");
 
-        authorization.setGlobalAuthenticationType(AuthenticationType.Specified);
+        authorization.setGlobalAuthenticationType(Authorization.AuthenticationType.Specified);
         String actualStatus = authorizationService.getStatus(authorization, authenticatedWho);
         Assert.assertEquals("401", actualStatus);
     }
@@ -130,10 +132,10 @@ public class AuthorizationServiceTest {
         AuthenticatedWho authenticatedWho = new AuthenticatedWho();
         authenticatedWho.setUserId("user-test");
 
-        authorization.setGlobalAuthenticationType(AuthenticationType.Specified);
+        authorization.setGlobalAuthenticationType(Authorization.AuthenticationType.Specified);
         User userTest = new User();
         userTest.setAuthenticationId("user-test");
-        UserCollection users = new UserCollection();
+        List<User> users = new ArrayList<>();
         users.add(userTest);
         authorization.setUsers(users);
 
@@ -155,10 +157,10 @@ public class AuthorizationServiceTest {
         Authorization authorization = new Authorization();
         AuthenticatedWho authenticatedWho = new AuthenticatedWho();
         authenticatedWho.setUserId("user-test");
-        authorization.setGlobalAuthenticationType(AuthenticationType.Specified);
+        authorization.setGlobalAuthenticationType(Authorization.AuthenticationType.Specified);
         Group groupTest = new Group();
         groupTest.setAuthenticationId("group-test");
-        GroupCollection groups = new GroupCollection();
+        List<Group> groups = new ArrayList<>();
         groups.add(groupTest);
         authorization.setGroups(groups);
         String actualStatus = authorizationService.getStatus(authorization, authenticatedWho);

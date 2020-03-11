@@ -1,12 +1,13 @@
 package com.manywho.services.saml.services;
 
-import com.manywho.sdk.entities.security.AuthenticatedWhoResult;
-import com.manywho.sdk.enums.AuthenticationStatus;
+import com.manywho.sdk.api.security.AuthenticatedWhoResult;
+import com.manywho.services.saml.entities.ApplicationConfiguration;
 import com.manywho.services.saml.entities.SamlResponseHandler;
 import com.manywho.services.saml.managers.CacheManager;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 
 public class AuthenticationService {
     private final JwtService jwtService;
@@ -25,7 +26,7 @@ public class AuthenticationService {
         return result;
     }
 
-    public AuthenticatedWhoResult createAuthenticatedWhoResult(SamlResponseHandler response) throws Exception {
+    public AuthenticatedWhoResult createAuthenticatedWhoResult(ApplicationConfiguration configuration, SamlResponseHandler response) throws Exception {
 
         if (response.isValid() == false) {
             return createAuthenticatedWhoResultWithError(response.getError());
@@ -34,7 +35,12 @@ public class AuthenticationService {
         String jwtToken;
 
         try {
-            jwtToken = jwtService.sign(response.getNameIdentifier(), response.getResponse().getNotBefore(), response.getResponse().getNotAfter());
+            ArrayList<String> groups = new ArrayList<>();
+            if (configuration.getGroupsInRuntime()) {
+                groups = response.getGroups();
+            }
+
+            jwtToken = jwtService.sign(response.getNameIdentifier(), response.getResponse().getNotBefore(), response.getResponse().getNotAfter(), groups);
             jwtService.validate(jwtToken);
         } catch (Exception e) {
             return createAuthenticatedWhoResultWithError(e.getMessage());
@@ -54,7 +60,7 @@ public class AuthenticationService {
             result.setLastName(response.getFirstName());
         }
 
-        result.setStatus(AuthenticationStatus.Authenticated);
+        result.setStatus(AuthenticatedWhoResult.AuthenticationStatus.Authenticated);
         result.setTenantName("SAML");
         result.setToken(jwtToken);
         result.setUserId(response.getNameIdentifier());

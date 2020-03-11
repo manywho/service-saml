@@ -13,7 +13,7 @@ public class SamlResponseHandler {
     private static final String GROUPS_NAMESPACE = "http://schemas.microsoft.com/ws/2008/06/identity/claims/groups";
     private HashMap<String, List<String>> attributes;
 
-    public SamlResponseHandler(Configuration configuration, String samlResponse, String currentURL) {
+    public SamlResponseHandler(ApplicationConfiguration configuration, String samlResponse, String currentURL) {
         ManyWhoSaml2Settings manyWhoSaml2Settings = new ManyWhoSaml2Settings(configuration);
         try {
             this.response = new ManyWhoSamlResponse(manyWhoSaml2Settings, samlResponse, currentURL);

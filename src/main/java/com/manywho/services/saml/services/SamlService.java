@@ -1,7 +1,7 @@
 package com.manywho.services.saml.services;
 
 import com.manywho.services.saml.adapters.ManyWhoSaml2Settings;
-import com.manywho.services.saml.entities.Configuration;
+import com.manywho.services.saml.entities.ApplicationConfiguration;
 import com.manywho.services.saml.entities.SamlResponseHandler;
 import com.manywho.services.saml.utils.SamlRequestGenerator;
 import com.onelogin.saml2.authn.*;
@@ -15,7 +15,7 @@ public class SamlService {
     @Inject
     public SamlService() {}
 
-    public SamlResponseHandler decryptResponse(Configuration configuration, String samlResponse, String redirectUri) {
+    public SamlResponseHandler decryptResponse(ApplicationConfiguration configuration, String samlResponse, String redirectUri) {
         try {
             return new SamlResponseHandler(configuration, samlResponse, redirectUri);
         } catch (Exception e) {
@@ -23,7 +23,7 @@ public class SamlService {
         }
     }
 
-    public String generateSamlLoginUrl(Configuration configuration) throws URISyntaxException, IOException {
+    public String generateSamlLoginUrl(ApplicationConfiguration configuration) throws URISyntaxException, IOException {
         Saml2Settings appSettings = new ManyWhoSaml2Settings(configuration);
         AuthnRequest authReq = new AuthnRequest(appSettings, false, false, false);
 

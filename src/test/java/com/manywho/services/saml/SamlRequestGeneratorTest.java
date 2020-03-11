@@ -3,7 +3,6 @@ package com.manywho.services.saml;
 import com.manywho.services.saml.utils.SamlRequestGenerator;
 import org.junit.Assert;
 import org.junit.Test;
-
 import java.net.URISyntaxException;
 
 public class SamlRequestGeneratorTest {

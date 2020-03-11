@@ -6,13 +6,14 @@ import com.manywho.services.saml.configuration.ServiceConfigurationProperties;
 
 import javax.inject.Inject;
 
-public class SecurityConfiguration extends ServiceConfigurationDefault {
+public class RedisConfiguration extends ServiceConfigurationDefault {
+
     @Inject
-    public SecurityConfiguration(ServiceConfigurationEnvironmentVariables environment, ServiceConfigurationProperties properties) {
+    public RedisConfiguration(ServiceConfigurationEnvironmentVariables environment, ServiceConfigurationProperties properties) {
         super(environment, properties);
     }
 
-    public String getSecret() {
-        return this.get("secret");
+    public String geRedisUrl() {
+        return this.get("redis.url");
     }
 }

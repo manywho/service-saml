@@ -15,9 +15,19 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.manywho</groupId>
-            <artifactId>sdk</artifactId>
-            <version>1.25.0</version>
+            <groupId>com.manywho.sdk</groupId>
+            <artifactId>sdk-server-undertow</artifactId>
+            <version>2.0.0-beta-12</version>
+        </dependency>
+        <dependency>
+            <groupId>com.manywho.sdk</groupId>
+            <artifactId>sdk-server-servlet3</artifactId>
+            <version>2.0.0-beta-12</version>
+        </dependency>
+        <dependency>
+            <groupId>com.manywho.sdk</groupId>
+            <artifactId>sdk-client</artifactId>
+            <version>2.0.0-beta-12</version>
         </dependency>
         <dependency>
             <groupId>com.auth0</groupId>
@@ -47,6 +57,17 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fiftyonred</groupId>
+            <artifactId>mock-jedis</artifactId>
+            <version>0.4.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>2.23.0</version>
@@ -56,6 +77,17 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.skyscreamer</groupId>
+            <artifactId>jsonassert</artifactId>
+            <version>1.5.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
