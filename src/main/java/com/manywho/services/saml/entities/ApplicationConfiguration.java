@@ -30,9 +30,6 @@ public class ApplicationConfiguration  implements Configuration {
     @Configuration.Setting(name ="Debug", contentType = ContentType.Boolean, required = false)
     private boolean debug;
 
-    @Configuration.Setting(name ="Support Groups In Runtime", contentType = ContentType.Boolean, required = false)
-    private boolean groupsInRuntime;
-
     @Configuration.Setting(name ="Supported Users", contentType = ContentType.String, required = false)
     private String supportedUsers;
 
@@ -80,10 +77,6 @@ public class ApplicationConfiguration  implements Configuration {
 
     public String getSupportedGroups() {
         return supportedGroups;
-    }
-
-    public boolean getGroupsInRuntime() {
-        return groupsInRuntime;
     }
 
     public boolean getCompressRequest() {

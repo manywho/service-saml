@@ -5,9 +5,7 @@ import com.manywho.services.saml.entities.ApplicationConfiguration;
 import com.manywho.services.saml.entities.SamlResponseHandler;
 import com.manywho.services.saml.managers.CacheManager;
 import org.apache.commons.lang3.StringUtils;
-
 import javax.inject.Inject;
-import java.util.ArrayList;
 
 public class AuthenticationService {
     private final JwtService jwtService;
@@ -35,12 +33,8 @@ public class AuthenticationService {
         String jwtToken;
 
         try {
-            ArrayList<String> groups = new ArrayList<>();
-            if (configuration.getGroupsInRuntime()) {
-                groups = response.getGroups();
-            }
 
-            jwtToken = jwtService.sign(response.getNameIdentifier(), response.getResponse().getNotBefore(), response.getResponse().getNotAfter(), groups);
+            jwtToken = jwtService.sign(response.getNameIdentifier(), response.getResponse().getNotBefore(), response.getResponse().getNotAfter());
             jwtService.validate(jwtToken);
         } catch (Exception e) {
             return createAuthenticatedWhoResultWithError(e.getMessage());

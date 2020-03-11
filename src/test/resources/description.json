@@ -85,14 +85,6 @@
     {
       "contentType": "ContentBoolean",
       "contentValue": null,
-      "developerName": "Support Groups In Runtime",
-      "ordinal": 0,
-      "required": false,
-      "typeElementDeveloperName": null
-    },
-    {
-      "contentType": "ContentBoolean",
-      "contentValue": null,
       "developerName": "Compress Request",
       "ordinal": 0,
       "required": false,
@@ -104,60 +96,13 @@
   "providesFiles": false,
   "providesIdentity": true,
   "providesListening": false,
-  "providesLogic": true,
+  "providesLogic": false,
   "providesNotifications": false,
   "providesSmartSave": false,
   "providesSocial": false,
   "providesSharing": false,
   "providesViews": false,
   "providesVoting": false,
-  "actions": [
-    {
-      "developerName": "Get Groups",
-      "developerSummary": "Get Groups from the Identity Provider Assertion",
-      "isViewMessageAction": false,
-      "serviceActionOutcomes": [
-
-      ],
-      "serviceInputs": [
-
-      ],
-      "serviceOutputs": [
-        {
-          "contentType": "ContentList",
-          "contentValue": null,
-          "developerName": "Groups",
-          "ordinal": 0,
-          "required": true,
-          "typeElementDeveloperName": "Group"
-        }
-      ],
-      "uriPart": "actions/get-groups"
-    }
-  ],
-  "install": {
-    "typeElements": [
-      {
-        "bindings": [
-
-        ],
-        "developerName": "Group",
-        "developerSummary": "SAML Claim Group",
-        "elementType": "TYPE",
-        "id": null,
-        "properties": [
-          {
-            "contentFormat": null,
-            "contentType": "ContentString",
-            "developerName": "Name",
-            "id": null,
-            "typeElementDeveloperName": null,
-            "typeElementId": null
-          }
-        ],
-        "serviceElementId": null,
-        "updateByName": false
-      }
-    ]
-  }
+  "actions": [],
+  "install": {}
 }
