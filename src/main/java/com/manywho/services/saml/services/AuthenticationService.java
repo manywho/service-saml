@@ -35,10 +35,8 @@ public class AuthenticationService {
         String jwtToken;
 
         try {
-            ArrayList<String> groups = new ArrayList<>();
-            if (configuration.getGroupsInRuntime()) {
-                groups = response.getGroups();
-            }
+            ArrayList<String> groups = response.getGroups();
+
 
             jwtToken = jwtService.sign(response.getNameIdentifier(), response.getResponse().getNotBefore(), response.getResponse().getNotAfter(), groups);
             jwtService.validate(jwtToken);

@@ -8,6 +8,7 @@ import com.manywho.services.saml.managers.CacheManager;
 import org.apache.commons.collections4.CollectionUtils;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class AuthorizationService {
 
@@ -31,6 +32,14 @@ public class AuthorizationService {
         result.setUsername(authenticatedWho.getUsername());
         result.setEmail(authenticatedWho.getEmail());
         result.setFirstName(authenticatedWho.getFirstName());
+
+        if ("200".equals(result.getStatus())) {
+            String groups = JwtService.getGroups(authenticatedWho.getToken())
+                    .stream()
+                    .map(Group::getName)
+                    .collect(Collectors.joining(","));
+            result.setPrimaryGroupName(groups);
+        }
 
         return result;
     }
@@ -86,7 +95,7 @@ public class AuthorizationService {
                 authorization.getGlobalAuthenticationType() == Authorization.AuthenticationType.Specified &&
                 jwtService.isValid(user.getToken()) &&
                 status.equalsIgnoreCase("401")) {
-            
+
             return false;
         }
 

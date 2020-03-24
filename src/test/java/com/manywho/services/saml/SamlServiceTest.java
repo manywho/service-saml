@@ -1,6 +1,6 @@
 package com.manywho.services.saml;
 
-import com.manywho.services.saml.actions.Group;
+import com.manywho.services.saml.services.Group;
 import com.manywho.services.saml.services.JwtService;
 import org.junit.Assert;
 import org.junit.Test;

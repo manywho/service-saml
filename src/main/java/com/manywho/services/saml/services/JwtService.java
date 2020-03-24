@@ -5,7 +5,6 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.manywho.services.saml.actions.Group;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
