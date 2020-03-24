@@ -33,12 +33,9 @@ public class AuthenticationService {
         }
 
         String jwtToken;
-
+        ArrayList<String> groups = response.getGroups();
         try {
-            ArrayList<String> groups = response.getGroups();
-
-
-            jwtToken = jwtService.sign(response.getNameIdentifier(), response.getResponse().getNotBefore(), response.getResponse().getNotAfter(), groups);
+            jwtToken = jwtService.sign(response.getNameIdentifier(), response.getResponse().getNotBefore(), response.getResponse().getNotAfter(), new ArrayList<>());
             jwtService.validate(jwtToken);
         } catch (Exception e) {
             return createAuthenticatedWhoResultWithError(e.getMessage());
@@ -67,7 +64,7 @@ public class AuthenticationService {
         cacheManager.removeUserGroups(result.getUserId());
 
         if (!response.getGroups().isEmpty()) {
-            cacheManager.saveUserGroups(result.getUserId(), response.getGroups());
+            cacheManager.saveUserGroups(result.getUserId(), groups);
         }
 
         return result;

@@ -8,7 +8,6 @@ import com.manywho.services.saml.managers.CacheManager;
 import org.apache.commons.collections4.CollectionUtils;
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 public class AuthorizationService {
 
@@ -21,7 +20,7 @@ public class AuthorizationService {
         this.jwtService = jwtService;
     }
 
-    public $User createUserObject(AuthenticatedWho authenticatedWho, String loginUrl, String status) {
+    public $User createUserObject(AuthenticatedWho authenticatedWho, String loginUrl, String status) throws Exception {
         $User result = new $User();
         result.setDirectoryId("SAML");
         result.setDirectoryName("SAML");
@@ -34,10 +33,7 @@ public class AuthorizationService {
         result.setFirstName(authenticatedWho.getFirstName());
 
         if ("200".equals(result.getStatus())) {
-            String groups = JwtService.getGroups(authenticatedWho.getToken())
-                    .stream()
-                    .map(Group::getName)
-                    .collect(Collectors.joining(","));
+            String groups = String.join(",", cacheManager.getUserGroups(result.getUserId()));
             result.setPrimaryGroupName(groups);
         }
 
