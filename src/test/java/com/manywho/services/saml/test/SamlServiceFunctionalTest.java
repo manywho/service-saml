@@ -15,7 +15,7 @@ import com.manywho.sdk.services.actions.DummyActionHandler;
 import com.manywho.sdk.services.actions.DummyActionProvider;
 import com.manywho.sdk.services.configuration.ApplicationConfiguration;
 import com.manywho.sdk.services.controllers.DefaultActionController;
-import com.manywho.sdk.services.controllers.DefaultDescribeController;
+import com.manywho.sdk.services.controllers.DefaultDescribeControllerV1;
 import com.manywho.sdk.services.controllers.DefaultFileController;
 import com.manywho.sdk.services.identity.AuthorizationEncoder;
 import com.manywho.sdk.services.providers.AuthenticatedWhoProvider;
@@ -84,7 +84,7 @@ public class SamlServiceFunctionalTest {
 
         dispatcher.getRegistry().addSingletonResource(injector.getInstance(DefaultActionController.class));
         dispatcher.getRegistry().addSingletonResource(injector.getInstance(DefaultFileController.class));
-        dispatcher.getRegistry().addSingletonResource(injector.getInstance(DefaultDescribeController.class));
+        dispatcher.getRegistry().addSingletonResource(injector.getInstance(DefaultDescribeControllerV1.class));
 
         Reflections reflections = injector.getInstance(Reflections.class);
 

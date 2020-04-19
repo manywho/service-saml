@@ -1,5 +1,10 @@
-FROM maven:onbuild-alpine
+FROM maven:slim AS build
+WORKDIR /usr/src/app
+COPY src src
+COPY pom.xml pom.xml
+RUN mvn clean package
 
+FROM openjdk:8-jre-slim
 EXPOSE 8080
-
-CMD ["java", "-Xmx300m", "-jar", "/usr/src/app/target/saml-1.0-SNAPSHOT.jar"]
+COPY --from=build /usr/src/app/target/saml-1.0-SNAPSHOT.jar /usr/src/app/target/service.jar
+ENTRYPOINT ["java", "-jar", "/usr/src/app/target/service.jar"]
