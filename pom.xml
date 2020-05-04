@@ -10,7 +10,7 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <version.manywho.sdk>2.0.0</version.manywho.sdk>
+        <version.manywho.sdk>2.0.1</version.manywho.sdk>
         <slf4jVersion>1.7.12</slf4jVersion>
     </properties>
 
