@@ -34,7 +34,10 @@ public class AuthenticationService {
 
         try {
 
-            jwtToken = jwtService.sign(response.getNameIdentifier(), response.getResponse().getNotBefore(), response.getResponse().getNotAfter());
+            jwtToken = jwtService.sign(response.getNameIdentifier(),response.getPrimaryGroupId(),
+                    response.getPrimaryGroupName(), response.getResponse().getNotBefore(),
+                    response.getResponse().getNotAfter());
+
             jwtService.validate(jwtToken);
         } catch (Exception e) {
             return createAuthenticatedWhoResultWithError(e.getMessage());
@@ -59,6 +62,8 @@ public class AuthenticationService {
         result.setToken(jwtToken);
         result.setUserId(response.getNameIdentifier());
         result.setUsername(response.getNameIdentifier());
+        result.setPrimaryGroupId(response.getPrimaryGroupId());
+        result.setPrimaryGroupName(response.getPrimaryGroupName());
 
         cacheManager.removeUserGroups(result.getUserId());
 

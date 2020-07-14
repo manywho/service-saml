@@ -46,6 +46,14 @@ public class SamlResponseHandler {
         return this.getAttribute("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname");
     }
 
+    public String getPrimaryGroupId() {
+        return this.getAttribute("http://schemas.manywho.com/2020/identity/claims/primarygroupid");
+    }
+
+    public String getPrimaryGroupName() {
+        return this.getAttribute("http://schemas.manywho.com/2020/identity/claims/primarygroupname");
+    }
+
     public ArrayList<String> getGroups() {
 
         if (!attributes.isEmpty() && attributes.get(GROUPS_NAMESPACE) != null) {

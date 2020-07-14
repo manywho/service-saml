@@ -1,5 +1,6 @@
 package com.manywho.services.saml.services;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.manywho.sdk.api.AuthorizationType;
 import com.manywho.sdk.api.run.elements.config.Authorization;
 import com.manywho.sdk.api.security.AuthenticatedWho;
@@ -29,10 +30,35 @@ public class AuthorizationService {
         result.setStatus(status);
         result.setUserId(authenticatedWho.getUserId());
         result.setUsername(authenticatedWho.getUsername());
+        result.setPrimaryGroupId(authenticatedWho.getPrimaryGroupId());
+        result.setPrimaryGroupName(authenticatedWho.getPrimaryGroupName());
         result.setEmail(authenticatedWho.getEmail());
         result.setFirstName(authenticatedWho.getFirstName());
 
+        addPrimaryGroup(status, authenticatedWho.getToken(), result);
+
         return result;
+    }
+
+    /**
+     * If the user is authorized we add the PrimaryGroupId and PrimaryGroupName (we don't add those values if they are
+     * empty)
+     *
+     * @param status status of the authorization
+     * @param token our service generated jwt token
+     * @param user we populate PrimaryGroupId and PrimaryGroupName in this object using the values of the token
+     */
+    public void addPrimaryGroup(String status, String token, $User user) {
+        if ("200".equals(status)) {
+            DecodedJWT decodedJwt = jwtService.decode(token);
+            if (decodedJwt.getClaim("pgi") != null) {
+                user.setPrimaryGroupId(decodedJwt.getClaim("pgi").asString());
+            }
+
+            if (decodedJwt.getClaim("pgn") != null) {
+                user.setPrimaryGroupName(decodedJwt.getClaim("pgn").asString());
+            }
+        }
     }
 
     public String getStatus(Authorization authorization, AuthenticatedWho user) throws Exception {
@@ -86,7 +112,7 @@ public class AuthorizationService {
                 authorization.getGlobalAuthenticationType() == Authorization.AuthenticationType.Specified &&
                 jwtService.isValid(user.getToken()) &&
                 status.equalsIgnoreCase("401")) {
-            
+
             return false;
         }
 
