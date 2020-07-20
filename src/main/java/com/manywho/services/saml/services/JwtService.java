@@ -23,8 +23,8 @@ public class JwtService {
     }
 
     public String sign(String identifier, String primaryGroupId, String primaryGroupName, LocalDateTime notBefore, LocalDateTime notAfter) {
-        long notAfterSeconds = LocalDateTime.now().plusMinutes(14).toEpochSecond(ZoneOffset.UTC);
-        long notBeforeSeconds = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+        long notAfterSeconds = LocalDateTime.now(ZoneOffset.UTC).plusMinutes(14).toEpochSecond(ZoneOffset.UTC);
+        long notBeforeSeconds = LocalDateTime.now(ZoneOffset.UTC).toEpochSecond(ZoneOffset.UTC);
 
         if (notBefore != null) {
             notBeforeSeconds = notBefore.atOffset(ZoneOffset.UTC).toEpochSecond();
@@ -37,7 +37,7 @@ public class JwtService {
         JWTCreator.Builder jwtBuilder = JWT.create()
                 .withIssuer("saml-service")
                 .withClaim("sub", identifier)
-                .withClaim("iat", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
+                .withClaim("iat", LocalDateTime.now(ZoneOffset.UTC).toEpochSecond(ZoneOffset.UTC))
                 .withClaim("exp", notAfterSeconds)
                 .withClaim("nbf", notBeforeSeconds);
 
