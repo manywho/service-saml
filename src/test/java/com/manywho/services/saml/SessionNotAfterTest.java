@@ -5,6 +5,8 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.manywho.sdk.api.security.AuthenticatedWhoResult;
+import com.manywho.services.saml.adapters.ManyWhoSamlResponse;
+import com.manywho.services.saml.adapters.ManyWhoSaml2Settings;
 import com.manywho.services.saml.entities.ApplicationConfiguration;
 import com.manywho.services.saml.entities.SamlResponseHandler;
 import com.manywho.services.saml.managers.CacheManager;
@@ -13,6 +15,7 @@ import com.manywho.services.saml.services.JwtService;
 import com.manywho.services.saml.services.SamlService;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -30,7 +33,7 @@ import static org.mockito.Mockito.when;
 public class SessionNotAfterTest {
 
     @Test
-    public void testSessionNotAfter() throws Exception {
+    public void testSessionNotAfterSamlResponse() throws Exception {
         // if I remove this line the encryption doesn't works
         org.apache.xml.security.Init.init();
 
@@ -43,7 +46,39 @@ public class SessionNotAfterTest {
 
         SamlService samlService = new SamlService();
         ApplicationConfiguration configuration = mock(ApplicationConfiguration.class);
+
+        when(configuration.getCertificate())
+                .thenReturn(publicCertificate);
+
+        when(configuration.getSpPrivateKey())
+                .thenReturn(privateCertificate);
+
+        when(configuration.getIdpEntityId())
+                .thenReturn(issuer);
+
+        when(configuration.getLoginUrl())
+                .thenReturn("https://capriza.github.io/samling/samling.html");
+
+        SamlResponseHandler handler = samlService.decryptResponse(configuration, samlResponse, "https://flow.manywho.com/api/run/1/saml");
+        
+        Assert.assertNotNull(handler.getResponse().getSessionNotAfter());
+    }
+
+    @Test
+    public void testSessionNotAfterJWT() throws Exception {
+        // if I remove this line the encryption doesn't works
+        org.apache.xml.security.Init.init();
+
+        String publicCertificate = getFileContent("public-certificate.txt");
+        String privateCertificate = getFileContent("private-certificate.txt");
+
+        String issuer = "https://capriza.github.io/samling/samling.html";
+
+        String samlResponse = base64String(getFileContent("saml-response.xml").getBytes());
+
+        ApplicationConfiguration configuration = mock(ApplicationConfiguration.class);
         CacheManager cacheManager = mock(CacheManager.class);
+        SamlResponseHandler handler = mock(SamlResponseHandler.class);
 
         when(configuration.getCertificate())
                 .thenReturn(publicCertificate);
@@ -60,16 +95,22 @@ public class SessionNotAfterTest {
         doNothing().when(cacheManager).removeUserGroups(anyString());
         doNothing().when(cacheManager).saveUserGroups(anyString(), any(ArrayList.class));
 
-        SamlResponseHandler handler = samlService.decryptResponse(configuration, samlResponse, "https://flow.manywho.com/api/run/1/saml");
+        when(handler.isValid()).thenReturn(true);
+
+        ManyWhoSamlResponse response = new ManyWhoSamlResponse(new ManyWhoSaml2Settings(configuration), samlResponse, "https://flow.manywho.com/api/run/1/saml");
+        when(handler.getResponse()).thenReturn(response);
 
         JwtService jwtService = new JwtService("test-secret");
-        AuthenticationService service = new AuthenticationService(jwtService, cacheManager);
+        JwtService jwtServiceSpy = Mockito.spy(jwtService);
 
-        AuthenticatedWhoResult result = service.createAuthenticatedWhoResult(configuration, handler, false);
+        doNothing().when(jwtServiceSpy).validate(anyString());
+
+        AuthenticationService service = new AuthenticationService(jwtServiceSpy, cacheManager);
+
+        AuthenticatedWhoResult result = service.createAuthenticatedWhoResult(configuration, handler);
 
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256("test-secret"))
             .withIssuer("saml-service")
-            // .acceptIssuedAt(Long.MAX_VALUE / 1000)
             .acceptExpiresAt(Long.MAX_VALUE / 1000)
             .build();
 

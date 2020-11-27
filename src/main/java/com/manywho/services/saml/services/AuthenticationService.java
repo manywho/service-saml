@@ -28,12 +28,8 @@ public class AuthenticationService {
     }
 
     public AuthenticatedWhoResult createAuthenticatedWhoResult(ApplicationConfiguration configuration, SamlResponseHandler response) throws Exception {
-        return createAuthenticatedWhoResult(configuration, response, true);
-    }
 
-    public AuthenticatedWhoResult createAuthenticatedWhoResult(ApplicationConfiguration configuration, SamlResponseHandler response, boolean validate) throws Exception {
-
-        if (validate == true && response.isValid() == false) {
+        if (response.isValid() == false) {
             return createAuthenticatedWhoResultWithError(response.getError());
         }
 
@@ -49,9 +45,7 @@ public class AuthenticationService {
                     response.getPrimaryGroupName(), response.getResponse().getNotBefore(),
                     notAfter);
 
-            if (validate == true) {
-                jwtService.validate(jwtToken);
-            }
+            jwtService.validate(jwtToken);
         } catch (Exception e) {
             return createAuthenticatedWhoResultWithError(e.getMessage());
         }
