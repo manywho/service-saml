@@ -2,15 +2,17 @@ package com.manywho.services.saml.entities;
 
 import com.manywho.services.saml.adapters.ManyWhoSaml2Settings;
 import com.manywho.services.saml.adapters.ManyWhoSamlResponse;
-import com.onelogin.saml2.exception.ValidationError;
-import javax.xml.xpath.XPathExpressionException;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 public class SamlResponseHandler {
     private ManyWhoSamlResponse response;
-    private static final String GROUPS_NAMESPACE = "http://schemas.microsoft.com/ws/2008/06/identity/claims/groups";
     private HashMap<String, List<String>> attributes;
 
     public SamlResponseHandler(ApplicationConfiguration configuration, String samlResponse, String currentURL) {
@@ -29,38 +31,84 @@ public class SamlResponseHandler {
         return response;
     }
 
-    public String getEmailAddress() {
-        return this.getAttribute("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress");
-    }
-
     public String getError()
     {
         return this.response.getError();
     }
 
+    public String getEmailAddress() {
+        return this.getAttribute(
+            Arrays.asList(
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
+                "email",
+                "emailaddress",
+                "email_address",
+                "mail"
+            )
+        );
+    }
+
     public String getFirstName() {
-        return this.getAttribute("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name");
+        return this.getAttribute(
+            Arrays.asList(
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name",
+                "name",
+                "firstname",
+                "first_name",
+                "first name",
+                "givenname",
+                "given_name",
+                "given name"
+            )
+        );
     }
 
     public String getLastName() {
-        return this.getAttribute("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname");
+        return this.getAttribute(
+            Arrays.asList(
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname",
+                "surname",
+                "sur_name",
+                "lastname",
+                "last_name",
+                "last name"
+            )
+        );
     }
 
     public String getPrimaryGroupId() {
-        return this.getAttribute("http://schemas.manywho.com/2020/identity/claims/primarygroupid");
+        return this.getAttribute(
+            Arrays.asList(
+                "http://schemas.manywho.com/2020/identity/claims/primarygroupid",
+                "primarygroupid",
+                "primary_group_id",
+                "primary group id"
+            )
+        );
     }
 
     public String getPrimaryGroupName() {
-        return this.getAttribute("http://schemas.manywho.com/2020/identity/claims/primarygroupname");
+        return this.getAttribute(
+            Arrays.asList(
+                "http://schemas.manywho.com/2020/identity/claims/primarygroupname",
+                "primarygroupname",
+                "primary_group_name",
+                "primary group name"
+            )
+        );
     }
 
     public ArrayList<String> getGroups() {
+        List<String> groups = this.getAttributes(
+            Arrays.asList(
+                "http://schemas.microsoft.com/ws/2008/06/identity/claims/groups",
+                "groups"
+            )
+        );
 
-        if (!attributes.isEmpty() && attributes.get(GROUPS_NAMESPACE) != null) {
-
-            return listToArrayList(attributes.get(GROUPS_NAMESPACE));
+        if (groups != null) {
+            return listToArrayList(groups);
         } else {
-
             return new ArrayList<>();
         }
     }
@@ -69,20 +117,52 @@ public class SamlResponseHandler {
         return this.response.getNameId();
     }
 
-    private String getAttribute(String key) {
-        try {
-            List<String> attributes = response.getAttributes().get(key);
-            if (attributes != null && attributes.size()>0) {
-                return attributes.get(0);
-            } else {
-                return "";
-            }
+    private List<String> getAttributes(String key) {
+        List<String> attributes = null;
 
-        } catch (XPathExpressionException | ValidationError e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+        Optional<String> attributeName = this.attributes
+            .keySet()
+            .stream()
+            .filter(x -> x.equalsIgnoreCase(key))
+            .findFirst();
+
+        if (attributeName.isPresent()) {
+            attributes = this.attributes.get(attributeName.get());
         }
 
+        return attributes;
+    }
+
+    private List<String> getAttributes(List<String> keys) {
+        for (int i = 0; i < keys.size(); i++) {
+            List<String> attributes = this.getAttributes(keys.get(i));
+            if (attributes != null) {
+                return attributes;
+            }
+        }
+
+        return new ArrayList<String>();
+    }
+
+    private String getAttribute(String key) {
+        List<String> attributes = this.getAttributes(key);
+
+        if (attributes != null && attributes.size()>0) {
+            return attributes.get(0);
+        } else {
+            return "";
+        }
+    }
+
+    private String getAttribute(List<String> keys) {
+        for (int i = 0; i < keys.size(); i++) {
+            String attribute = this.getAttribute(keys.get(i));
+            if (StringUtils.isNotEmpty(attribute)) {
+                return attribute;
+            }
+        }
+
+        return "";
     }
 
     private ArrayList<String> listToArrayList (List<String> list) {
