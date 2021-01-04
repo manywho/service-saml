@@ -5,7 +5,7 @@ import com.manywho.services.saml.entities.ApplicationConfiguration;
 import com.manywho.services.saml.entities.SamlResponseHandler;
 import com.manywho.services.saml.managers.CacheManager;
 import org.apache.commons.lang3.StringUtils;
-
+import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 
 import javax.inject.Inject;
@@ -28,12 +28,21 @@ public class AuthenticationService {
     }
 
     public AuthenticatedWhoResult createAuthenticatedWhoResult(ApplicationConfiguration configuration, SamlResponseHandler response) throws Exception {
+        return createAuthenticatedWhoResult(configuration, response, true);
+    }
+
+    public AuthenticatedWhoResult createAuthenticatedWhoResult(ApplicationConfiguration configuration, SamlResponseHandler response, boolean validate) throws Exception {
 
         if (response.isValid() == false) {
             return createAuthenticatedWhoResultWithError(response.getError());
         }
 
         String jwtToken;
+
+        String primaryGroupName = response.getPrimaryGroupName();
+        if (StringUtils.isEmpty(primaryGroupName)) {
+            primaryGroupName = response.getGroups().stream().collect(Collectors.joining(","));
+        }
 
         try {
             LocalDateTime notAfter = response.getResponse().getSessionNotAfter();
@@ -42,7 +51,7 @@ public class AuthenticationService {
             }
 
             jwtToken = jwtService.sign(response.getNameIdentifier(),response.getPrimaryGroupId(),
-                    response.getPrimaryGroupName(), response.getResponse().getNotBefore(),
+                    primaryGroupName, response.getResponse().getNotBefore(),
                     notAfter);
 
             jwtService.validate(jwtToken);
