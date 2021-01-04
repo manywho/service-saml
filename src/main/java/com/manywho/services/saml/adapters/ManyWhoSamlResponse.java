@@ -18,12 +18,14 @@ public class ManyWhoSamlResponse extends SamlResponse {
 
     private LocalDateTime notBefore;
     private LocalDateTime notAfter;
+    private LocalDateTime sessionNotAfter;
 
     public ManyWhoSamlResponse(Saml2Settings settings, String samlResponse, String currentUrl) throws ValidationError, SAXException, XPathExpressionException, SettingsException, ParserConfigurationException, IOException {
         super(settings, null);
         this.setDestinationUrl(currentUrl);
         this.loadXmlFromBase64(samlResponse);
         setNotBeforeAndNotAfterFromConditions();
+        setSessionNotAfter();
     }
 
     public LocalDateTime getNotBefore() {
@@ -32,6 +34,10 @@ public class ManyWhoSamlResponse extends SamlResponse {
 
     public LocalDateTime getNotAfter() {
         return notAfter;
+    }
+
+    public LocalDateTime getSessionNotAfter() {
+        return sessionNotAfter;
     }
 
     void setNotBeforeAndNotAfterFromConditions() {
@@ -48,6 +54,20 @@ public class ManyWhoSamlResponse extends SamlResponse {
 
                 if (notBeforeAttribute != null) {
                     notBefore = moreRestrictiveBeforeDate(notBefore, dateTimeFromString(notBeforeAttribute.getNodeValue()));
+                }
+            }
+        }
+    }
+
+    void setSessionNotAfter() {
+        NodeList authnStatements = super.getSAMLResponseDocument().getElementsByTagNameNS("*", "AuthnStatement");
+        if (authnStatements.getLength() != 0) {
+            for (int i = 0; i < authnStatements.getLength(); ++i) {
+                NamedNodeMap attrName = authnStatements.item(i).getAttributes();
+                Node sessionNotAfterAttribute = attrName.getNamedItem("SessionNotOnOrAfter");
+
+                if (sessionNotAfterAttribute != null) {
+                    sessionNotAfter = moreRestrictiveAfterDate(sessionNotAfter, dateTimeFromString(sessionNotAfterAttribute.getNodeValue()));
                 }
             }
         }
