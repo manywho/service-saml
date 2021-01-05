@@ -189,7 +189,6 @@ public class AttributesTest {
         String signedResponse = Util.addSign(document, privateKey, cert, null);
 
         String samlResponse = base64String(signedResponse.getBytes());
-        // String samlResponse = base64String(getFileContent(file).getBytes());
 
         String publicCertificate = getFileContent("public-certificate.txt");
         String privateCertificate = getFileContent("private-certificate.txt");
