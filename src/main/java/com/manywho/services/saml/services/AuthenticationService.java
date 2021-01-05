@@ -79,7 +79,7 @@ public class AuthenticationService {
         result.setUserId(response.getNameIdentifier());
         result.setUsername(response.getNameIdentifier());
         result.setPrimaryGroupId(response.getPrimaryGroupId());
-        result.setPrimaryGroupName(response.getPrimaryGroupName());
+        result.setPrimaryGroupName(primaryGroupName);
 
         cacheManager.removeUserGroups(result.getUserId());
 
