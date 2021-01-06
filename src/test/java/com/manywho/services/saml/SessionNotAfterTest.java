@@ -42,12 +42,18 @@ public class SessionNotAfterTest {
         // if I remove this line the encryption doesn't works
         org.apache.xml.security.Init.init();
 
-        String samlResponse = base64String(getFileContent("saml-response.xml").getBytes());
-
         String publicCertificate = getFileContent("public-certificate.txt");
         String privateCertificate = getFileContent("private-certificate.txt");
-
         String issuer = "https://capriza.github.io/samling/samling.html";
+
+        Document document = Util.loadXML(getFileContent("saml-response.xml"));
+
+        X509Certificate cert = Util.loadCert(publicCertificate);
+        PrivateKey privateKey = Util.loadPrivateKey(privateCertificate);
+
+        String signedResponse = Util.addSign(document, privateKey, cert, null);
+
+        String samlResponse = base64String(signedResponse.getBytes());
 
         SamlService samlService = new SamlService();
         ApplicationConfiguration configuration = mock(ApplicationConfiguration.class);
