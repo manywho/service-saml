@@ -13,12 +13,17 @@ import com.manywho.services.saml.managers.CacheManager;
 import com.manywho.services.saml.services.AuthenticationService;
 import com.manywho.services.saml.services.JwtService;
 import com.manywho.services.saml.services.SamlService;
+import com.onelogin.saml2.util.Util;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.w3c.dom.Document;
 import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Calendar;
@@ -74,7 +79,14 @@ public class SessionNotAfterTest {
 
         String issuer = "https://capriza.github.io/samling/samling.html";
 
-        String samlResponse = base64String(getFileContent("saml-response.xml").getBytes());
+        Document document = Util.loadXML(getFileContent("saml-response.xml"));
+
+        X509Certificate cert = Util.loadCert(getFileContent("public-certificate.txt"));
+        PrivateKey privateKey = Util.loadPrivateKey(getFileContent("private-certificate.txt"));
+
+        String signedResponse = Util.addSign(document, privateKey, cert, null);
+
+        String samlResponse = base64String(signedResponse.getBytes());
 
         ApplicationConfiguration configuration = mock(ApplicationConfiguration.class);
         CacheManager cacheManager = mock(CacheManager.class);
@@ -116,10 +128,10 @@ public class SessionNotAfterTest {
 
         DecodedJWT token = verifier.verify(result.getToken());
 
-        Calendar expected = new GregorianCalendar(2019, 9, 9);
-        expected.set(Calendar.HOUR, 11);
-        expected.set(Calendar.MINUTE, 29);
-        expected.set(Calendar.SECOND, 54);
+        Calendar expected = new GregorianCalendar(2030, 0, 1);
+        expected.set(Calendar.HOUR, 0);
+        expected.set(Calendar.MINUTE, 0);
+        expected.set(Calendar.SECOND, 0);
 
         Calendar actual = new GregorianCalendar();
         actual.setTime(token.getExpiresAt());

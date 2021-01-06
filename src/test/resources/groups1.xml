@@ -1,18 +1,18 @@
-<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Version="2.0" ID="_f5dd080f69c8d406a561fd94146562dd83a3460d3b" IssueInstant="2020-12-02T13:31:01.112Z" Destination="https://flow.manywho.com/api/run/1/saml">
+<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Version="2.0" ID="_ecccc29bb80f4eafe1971d65925ea4439bea769f25" IssueInstant="2020-12-02T13:21:41.229Z" Destination="https://flow.manywho.com/api/run/1/saml">
     <saml:Issuer>https://capriza.github.io/samling/samling.html</saml:Issuer>
     <samlp:Status>
         <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success" />
     </samlp:Status>
-    <saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Version="2.0" ID="_409de15264b3cc35160b79bed979ac1f6d079eef0f" IssueInstant="2020-12-02T13:31:01.088Z">
+    <saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Version="2.0" ID="_9e56be91baf72c717c69d777cd22af1e6e7a37e646" IssueInstant="2020-12-02T13:21:41.208Z">
         <saml:Issuer>https://capriza.github.io/samling/samling.html</saml:Issuer>
         <saml:Subject>
             <saml:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress">test</saml:NameID>
             <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
-                <saml:SubjectConfirmationData NotOnOrAfter="2020-12-02T13:41:01.088Z" Recipient="https://flow.manywho.com/api/run/1/saml" />
+                <saml:SubjectConfirmationData NotOnOrAfter="2020-12-02T13:31:41.208Z" Recipient="https://flow.manywho.com/api/run/1/saml" />
             </saml:SubjectConfirmation>
         </saml:Subject>
-        <saml:Conditions NotBefore="2020-12-02T13:31:01.088Z" NotOnOrAfter="2020-12-02T13:41:01.088Z" />
-        <saml:AuthnStatement AuthnInstant="2020-12-02T13:31:01.088Z" SessionNotOnOrAfter="2020-12-02T13:41:01.088Z" SessionIndex="_samling_3505966_0182682783">
+        <saml:Conditions NotBefore="2020-12-02T13:21:41.208Z" NotOnOrAfter="2020-12-02T13:31:41.208Z" />
+        <saml:AuthnStatement AuthnInstant="2020-12-02T13:21:41.208Z" SessionNotOnOrAfter="2020-12-02T13:31:41.207Z" SessionIndex="_samling_6569528_942070244">
             <saml:AuthnContext>
                 <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified</saml:AuthnContextClassRef>
             </saml:AuthnContext>
@@ -30,9 +30,6 @@
             <saml:Attribute Name="groups">
                 <saml:AttributeValue xsi:type="xs:anyType">group1</saml:AttributeValue>
                 <saml:AttributeValue xsi:type="xs:anyType">group2</saml:AttributeValue>
-            </saml:Attribute>
-            <saml:Attribute Name="primarygroupname">
-                <saml:AttributeValue xsi:type="xs:anyType">primarygroupname</saml:AttributeValue>
             </saml:Attribute>
         </saml:AttributeStatement>
     </saml:Assertion>
