@@ -17,8 +17,6 @@ public class SamlResponseHandler {
 
     public SamlResponseHandler(ApplicationConfiguration configuration, String samlResponse, String currentURL) {
         ManyWhoSaml2Settings manyWhoSaml2Settings = new ManyWhoSaml2Settings(configuration);
-        manyWhoSaml2Settings.setSPValidationOnly(true);
-        manyWhoSaml2Settings.setWantXMLValidation(false);
 
         try {
             this.response = new ManyWhoSamlResponse(manyWhoSaml2Settings, samlResponse, currentURL);

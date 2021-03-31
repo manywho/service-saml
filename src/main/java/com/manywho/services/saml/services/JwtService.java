@@ -36,7 +36,7 @@ public class JwtService {
                 .withClaim("nbf", notBeforeSeconds);
 
         // We only add the exp claim if "not after" is specified as the default expiry is handled by the flow backend itself
-        if( notAfter != null) {
+        if(notAfter != null) {
             jwtBuilder.withClaim("exp", notAfter.atOffset(ZoneOffset.UTC).toEpochSecond());
         }
 
