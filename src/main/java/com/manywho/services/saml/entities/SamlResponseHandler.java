@@ -17,6 +17,7 @@ public class SamlResponseHandler {
 
     public SamlResponseHandler(ApplicationConfiguration configuration, String samlResponse, String currentURL) {
         ManyWhoSaml2Settings manyWhoSaml2Settings = new ManyWhoSaml2Settings(configuration);
+
         try {
             this.response = new ManyWhoSamlResponse(manyWhoSaml2Settings, samlResponse, currentURL);
             this.attributes = response.getAttributes();

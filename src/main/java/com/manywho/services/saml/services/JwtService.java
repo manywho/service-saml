@@ -23,23 +23,22 @@ public class JwtService {
     }
 
     public String sign(String identifier, String primaryGroupId, String primaryGroupName, LocalDateTime notBefore, LocalDateTime notAfter) {
-        long notAfterSeconds = LocalDateTime.now().plusMinutes(14).toEpochSecond(ZoneOffset.UTC);
         long notBeforeSeconds = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
         if (notBefore != null) {
             notBeforeSeconds = notBefore.atOffset(ZoneOffset.UTC).toEpochSecond();
         }
 
-        if( notAfter != null) {
-            notAfterSeconds = notAfter.atOffset(ZoneOffset.UTC).toEpochSecond();
-        }
-
         JWTCreator.Builder jwtBuilder = JWT.create()
                 .withIssuer("saml-service")
                 .withClaim("sub", identifier)
                 .withClaim("iat", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
-                .withClaim("exp", notAfterSeconds)
                 .withClaim("nbf", notBeforeSeconds);
+
+        // We only add the exp claim if "not after" is specified as the default expiry is handled by the flow backend itself
+        if(notAfter != null) {
+            jwtBuilder.withClaim("exp", notAfter.atOffset(ZoneOffset.UTC).toEpochSecond());
+        }
 
         // the primaryGroupId and PrimaryGroupName are ignored by engine when we return them during authentication
         // we pass those values into the jwt token then they can be returned during authorization
