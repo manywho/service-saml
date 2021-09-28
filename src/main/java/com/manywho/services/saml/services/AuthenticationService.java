@@ -7,6 +7,8 @@ import com.manywho.services.saml.managers.CacheManager;
 import org.apache.commons.lang3.StringUtils;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 
 import javax.inject.Inject;
 
@@ -46,9 +48,6 @@ public class AuthenticationService {
 
         try {
             LocalDateTime notAfter = response.getResponse().getSessionNotAfter();
-            if (notAfter == null) {
-                notAfter = response.getResponse().getNotAfter();
-            }
 
             jwtToken = jwtService.sign(response.getNameIdentifier(),response.getPrimaryGroupId(),
                     primaryGroupName, response.getResponse().getNotBefore(),
