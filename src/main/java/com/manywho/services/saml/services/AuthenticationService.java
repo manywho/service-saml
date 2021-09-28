@@ -7,8 +7,6 @@ import com.manywho.services.saml.managers.CacheManager;
 import org.apache.commons.lang3.StringUtils;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 
 import javax.inject.Inject;
 
