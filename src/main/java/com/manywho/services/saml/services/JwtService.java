@@ -8,6 +8,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 
 public class JwtService {
     private Algorithm algorithm;
@@ -29,16 +30,17 @@ public class JwtService {
             notBeforeSeconds = notBefore.atOffset(ZoneOffset.UTC).toEpochSecond();
         }
 
+        // Default the timeout to 12 hours if SessionNotOnOrAfter is definied in the SAML response
+        if (notAfter == null) {
+            notAfter = LocalDateTime.now().plus(12, ChronoUnit.HOURS);
+        }
+
         JWTCreator.Builder jwtBuilder = JWT.create()
                 .withIssuer("saml-service")
                 .withClaim("sub", identifier)
                 .withClaim("iat", LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
-                .withClaim("nbf", notBeforeSeconds);
-
-        // We only add the exp claim if "not after" is specified as the default expiry is handled by the flow backend itself
-        if(notAfter != null) {
-            jwtBuilder.withClaim("exp", notAfter.atOffset(ZoneOffset.UTC).toEpochSecond());
-        }
+                .withClaim("nbf", notBeforeSeconds)
+                .withClaim("exp", notAfter.atOffset(ZoneOffset.UTC).toEpochSecond());
 
         // the primaryGroupId and PrimaryGroupName are ignored by engine when we return them during authentication
         // we pass those values into the jwt token then they can be returned during authorization

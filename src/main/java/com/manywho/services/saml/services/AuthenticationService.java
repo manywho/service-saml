@@ -46,9 +46,6 @@ public class AuthenticationService {
 
         try {
             LocalDateTime notAfter = response.getResponse().getSessionNotAfter();
-            if (notAfter == null) {
-                notAfter = response.getResponse().getNotAfter();
-            }
 
             jwtToken = jwtService.sign(response.getNameIdentifier(),response.getPrimaryGroupId(),
                     primaryGroupName, response.getResponse().getNotBefore(),
