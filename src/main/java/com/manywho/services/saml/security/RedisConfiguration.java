@@ -14,6 +14,7 @@ public class RedisConfiguration extends ServiceConfigurationDefault {
     }
 
     public String geRedisUrl() {
+        System.out.print("Redis url " + this.get("redis.url") + System.lineSeparator());
         return this.get("redis.url");
     }
 }

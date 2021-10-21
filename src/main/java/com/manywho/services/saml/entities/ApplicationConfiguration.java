@@ -6,10 +6,10 @@ import com.manywho.services.saml.validators.Certificate;
 
 public class ApplicationConfiguration  implements Configuration {
     @Certificate
-    @Configuration.Setting(name ="Certificate", contentType = ContentType.Encrypted)
+    @Configuration.Setting(name ="Certificate", contentType = ContentType.Password)
     private String certificate;
 
-    @Configuration.Setting(name ="SP Private Key", contentType = ContentType.Encrypted, required = false)
+    @Configuration.Setting(name ="SP Private Key", contentType = ContentType.Password, required = false)
     private String privateKey;
 
     @Configuration.Setting(name ="Login URL", contentType = ContentType.String)
