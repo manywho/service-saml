@@ -20,27 +20,33 @@ public class ServiceConfigurationDefault implements ServiceConfiguration {
         // Load from the service.properties first
         String value = properties.get(key);
 
+        System.out.print(key + " value from properties " + value + System.lineSeparator());
+
         // Overwrite with any environment variables passed in
         if (environment.has(key)) {
             value = environment.get(key);
+            System.out.print(key + " value from env var " + value + System.lineSeparator());
         }
 
         // Look for any environment variables with the formatting convention of VARIABLE_NAME, converted from camelCase
         String environmentFormatKeyCamelcase = convertCamelcaseKeyToEnvironmentFormat(key);
         if (environment.has(environmentFormatKeyCamelcase)) {
             value = environment.get(environmentFormatKeyCamelcase);
+            System.out.print(environmentFormatKeyCamelcase + " value from env var " + value + System.lineSeparator());
         }
 
         // Look for any environment variables with the formatting convention of VARIABLE_NAME, converted from dot.notation
         String environmentFormatKeyDotNotation = convertDotNotationKeyToEnvironmentFormat(key);
         if (environment.has(environmentFormatKeyDotNotation)) {
             value = environment.get(environmentFormatKeyDotNotation);
+            System.out.print(environmentFormatKeyDotNotation + " value from env var " + value + System.lineSeparator());
         }
 
         // Look for any environment variables with the combined formatting conventions from above
         String combinedFormatKey = convertCombinedNotationKeyToEnvironmentFormat(key);
         if (environment.has(combinedFormatKey)) {
             value = environment.get(combinedFormatKey);
+            System.out.print(combinedFormatKey + " value from env var " + value + System.lineSeparator());
         }
 
         return value;
